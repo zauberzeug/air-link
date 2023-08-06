@@ -1,3 +1,5 @@
+import logging
+
 import asyncssh
 import socketio
 
@@ -8,7 +10,8 @@ class Server(asyncssh.SSHServer):
     def __init__(self, air):
         self.air = air
 
-    def connection_made(self, conn):
+    def connection_made(self, conn: asyncssh.SSHServerConnection):
+        logging.info(f'SSH connection received from {conn.get_extra_info("peername")[0]}')
         self._conn = conn
 
     def begin_auth(self, username):
