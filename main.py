@@ -12,8 +12,8 @@ from nicegui import app, background_tasks, ui
 import ssh
 
 icecream.install()
-# nicegui.air.RELAY_HOST = 'https://on-air-preview.fly.dev'
-nicegui.air.RELAY_HOST = 'http://localhost'
+nicegui.air.RELAY_HOST = 'https://on-air-preview.fly.dev'
+# nicegui.air.RELAY_HOST = 'http://localhost'
 
 ui.label('Air Admin').classes('text-4xl')
 
