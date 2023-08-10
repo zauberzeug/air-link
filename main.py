@@ -2,9 +2,8 @@
 
 import asyncio
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 
-import asyncssh
 import icecream
 import nicegui.air
 import nicegui.globals
@@ -22,7 +21,7 @@ ui.label('Air Admin').classes('text-4xl')
 @app.on_startup
 async def startup():
     incoming: Dict[str, asyncio.StreamWriter] = {}
-    next_ssh_connection: tuple[asyncio.StreamReader, asyncio.StreamWriter] = \
+    next_ssh_connection: Tuple[asyncio.StreamReader, asyncio.StreamWriter] = \
         await asyncio.open_connection('localhost', 22)
 
     @nicegui.globals.air.relay.on('ssh_data')
@@ -47,4 +46,4 @@ async def startup():
     def connect_ssh(data: Dict[str, str]) -> None:
         background_tasks.create(create_ssh_connection(data['ssh_id']))
 
-ui.run(favicon='🩺', storage_secret='secret', on_air='MD8wwLD9R3sy28nm')
+ui.run(favicon='⛑', storage_secret='secret', on_air='MD8wwLD9R3sy28nm')
