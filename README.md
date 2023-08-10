@@ -20,3 +20,12 @@ Allowing multiple sessions and reconnects is not yet implemented.
 
 Note: the ip address is allocated to point to the preview server;
 the on-air-preview.fly.dev can not be used because the load balancer does not route arbitrary tcp traffic (or so I think).
+
+You can also put the proxy jump into your `~/.ssh/config`:
+
+```
+Host air-preview-rodja
+    HostName localhost
+    User rodja
+    ProxyJump zauberzeug/rodja@168.220.85.116
+```
