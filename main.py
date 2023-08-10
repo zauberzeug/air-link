@@ -24,16 +24,13 @@ async def startup():
 
     @nicegui.globals.air.relay.on('ssh_data')
     async def from_socketio_to_tcp(data: Dict[str, Any]) -> None:
-        ic(data['data'])
         writer.write(data['data'])
 
     async def from_tcp_to_socketio() -> None:
         while not reader.at_eof():
             data = await reader.read(1024)
-            ic(data)
             if data:
                 await nicegui.globals.air.relay.emit('ssh_data', {'data': data})
-        ic()
 
     @nicegui.globals.air.relay.on('connect_ssh')
     def connect_ssh() -> None:

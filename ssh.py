@@ -14,11 +14,9 @@ class Server(asyncssh.SSHServer):
         self._conn = conn
 
     def begin_auth(self, username):
-        ic(username)
         return False  # Allow anonymous access
 
     async def session_requested(self):
-        ic()
         return Session(self.relay)
 
 
@@ -27,14 +25,12 @@ class Session(asyncssh.SSHServerSession):
         self.relay = relay
 
     def connection_made(self, chan):
-        ic()
         self._chan = chan
 
     def shell_requested(self):
         return True
 
     def exec_requested(self, command):
-        ic(command)
         return False
 
     def data_received(self, data, datatype):
