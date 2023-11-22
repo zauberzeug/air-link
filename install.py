@@ -15,11 +15,12 @@ if nv_tegra_release_path.is_file():
         l4t_revision = l4t_revision_match.group(1)
         l4t_version = f"{l4t_release}.{l4t_revision}"
         if l4t_release == "32":
-            print('installing Python 3.8')
-            run.sh('sudo apt install software-properties-common -y')
-            run.sh('sudo add-apt-repository ppa:deadsnakes/ppa -y')
-            run.sh('sudo apt install python3.8 -y')
-            run.sh('curl https://bootstrap.pypa.io/get-pip.py | python3.8')
+            if not run.sh('python3.8 --version'):
+                print('installing Python 3.8')
+                run.sh('sudo apt install software-properties-common -y')
+                run.sh('sudo add-apt-repository ppa:deadsnakes/ppa -y')
+                run.sh('sudo apt install python3.8 -y')
+                run.sh('curl https://bootstrap.pypa.io/get-pip.py | python3.8')
             run.python_cmd = 'python3.8'
 
 run.pip('install -r requirements.txt')

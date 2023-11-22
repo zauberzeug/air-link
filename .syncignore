@@ -5,3 +5,4 @@ __pycache__/
 *.tmp
 .env
 .vscode/
+air-admin.zip

@@ -1,19 +1,23 @@
 #!/usr/bin/env python3
 import asyncio
 import logging
+import os
 from typing import Any, Dict, Tuple
 
 import icecream
 import nicegui.air
+from dotenv import load_dotenv
 from nicegui import app, ui
 
 logging.basicConfig(level=logging.INFO)
-
 icecream.install()
-# nicegui.air.RELAY_HOST = 'https://on-air-preview.fly.dev'
-#nicegui.air.RELAY_HOST = 'http://localhost'
+load_dotenv('.env')
+
+if os.environ.get('ON_AIR_SERVER'):
+    nicegui.air.RELAY_HOST = os.environ.get('ON_AIR_SERVER')
 
 ui.label('Air Admin').classes('text-4xl')
+nicegui.air.RELAY_HOST = 'https://wasserbauer.zauberzeug.com/'
 
 
 @app.on_startup
@@ -51,4 +55,4 @@ async def startup():
         writer.close()
         logging.info(f'ssh connection for {data["ssh_id"]} closed')
 
-ui.run(favicon='⛑', storage_secret='secret', on_air='MD8wwLD9R3sy28nm')
+ui.run(favicon='⛑', storage_secret='secret', on_air=os.environ.get('ON_AIR_TOKEN'))
