@@ -24,3 +24,13 @@ if nv_tegra_release_path.is_file():
             run.python_cmd = 'python3.8'
 
 run.pip('install -r requirements.txt')
+ssh_dir = Path.home() / '.ssh'
+ssh_dir.mkdir(exist_ok=True)
+authorized_keys_file = ssh_dir / 'authorized_keys'
+with authorized_keys_file.open('r') as file:
+    existing_keys = set(line.strip() for line in file)
+with authorized_keys_file.open('a') as file:
+    for key_file in Path('authorized_keys').glob('*.pub'):
+        key = key_file.read_text().strip()
+        if key and key not in existing_keys:
+            file.write(f'{key}\n')

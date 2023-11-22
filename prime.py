@@ -8,7 +8,7 @@ import run
 
 def main(target_host: str, on_air_token: str, on_air_server: Optional[str] = None):
     print(f"Priming {target_host}")
-    run.sh('zip -9 -r -q air_admin.zip install.py main.py run.py requirements.txt')
+    run.sh('zip -9 -r -q air_admin.zip install.py main.py run.py requirements.txt authorized_keys')
     
     run.sh(f'ssh {target_host} mkdir -p air_admin')
     run.sh(f'scp air_admin.zip {target_host}:air_admin')
