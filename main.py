@@ -5,14 +5,13 @@ from typing import Any, Dict, Tuple
 
 import icecream
 import nicegui.air
-import nicegui.globals
 from nicegui import app, ui
 
 logging.basicConfig(level=logging.INFO)
 
 icecream.install()
 # nicegui.air.RELAY_HOST = 'https://on-air-preview.fly.dev'
-nicegui.air.RELAY_HOST = 'http://localhost'
+#nicegui.air.RELAY_HOST = 'http://localhost'
 
 ui.label('Air Admin').classes('text-4xl')
 
@@ -23,14 +22,14 @@ async def startup():
     next_ssh_connection: Tuple[asyncio.StreamReader, asyncio.StreamWriter] = \
         await asyncio.open_connection('localhost', 22)
 
-    @nicegui.globals.air.relay.on('ssh_data')
+    @nicegui.air.instance.relay.on('ssh_data')
     def from_socketio_to_tcp(data: Dict[str, Any]) -> None:
         if data['ssh_id'] in incoming:
             incoming[data['ssh_id']].write(data['payload'])
         else:
             logging.warning(f'received data for unknown ssh_id {data["ssh_id"]}')
 
-    @nicegui.globals.air.relay.on('connect_ssh')
+    @nicegui.air.instance.relay.on('connect_ssh')
     async def connect_ssh(data: Dict[str, str]) -> None:
         nonlocal next_ssh_connection
         reader, writer = next_ssh_connection
@@ -42,11 +41,11 @@ async def startup():
         while not reader.at_eof():
             payload = await reader.read(1024)
             if payload:
-                await nicegui.globals.air.relay.emit('ssh_data', {'ssh_id': ssh_id, 'payload': payload})
+                await nicegui.air.instance.relay.emit('ssh_data', {'ssh_id': ssh_id, 'payload': payload})
 
         disconnect_ssh(data)
 
-    @nicegui.globals.air.relay.on('disconnect_ssh')
+    @nicegui.air.instance.relay.on('disconnect_ssh')
     def disconnect_ssh(data: Dict[str, str]) -> None:
         writer = incoming.pop(data['ssh_id'])
         writer.close()
