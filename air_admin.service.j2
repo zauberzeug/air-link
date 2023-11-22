@@ -1,0 +1,14 @@
+[Unit]
+Description=Air Admin
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/{{ python_cmd }} main.py
+WorkingDirectory=/home/zauberzeug/air_admin
+User=zauberzeug
+Group=zauberzeug
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
