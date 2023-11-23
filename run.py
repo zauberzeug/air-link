@@ -40,3 +40,7 @@ def sudo(*cmds:str) -> bool:
         if process.returncode != 0:
             return False
     return True
+
+def ssh(target_host:str, *cmds:str) -> bool:
+    cmd_chain = ' && '.join(cmds)
+    return sh(f'ssh -t {target_host} \'{cmd_chain}\'')
