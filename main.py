@@ -47,12 +47,14 @@ async def startup():
             if payload:
                 await nicegui.air.instance.relay.emit('ssh_data', {'ssh_id': ssh_id, 'payload': payload})
 
-        disconnect_ssh(data)
+        await disconnect_ssh(data)
 
     @nicegui.air.instance.relay.on('disconnect_ssh')
-    def disconnect_ssh(data: Dict[str, str]) -> None:
+    async def disconnect_ssh(data: Dict[str, str]) -> None:
         writer = incoming.pop(data['ssh_id'])
+        await writer.drain()
         writer.close()
+        await writer.wait_closed()
         logging.info(f'ssh connection for {data["ssh_id"]} closed')
 
 ui.run(favicon='⛑', storage_secret='secret', on_air=os.environ.get('ON_AIR_TOKEN'))
