@@ -23,3 +23,20 @@ Host air-preview-rodja
     User rodja
     ProxyJump zauberzeug/rodja@on-air.nicegui.io
 ```
+
+## Deploy
+
+Bring Air Admin to a new device by calling
+
+```bash
+./prime.py <target device> <on air token> --on-air-server=<the on air server>
+```
+
+It will put the air_admin code in the home dir of the user and start a system service.
+
+You can re-run the installation locally on the device by calling
+
+```bash
+cd ~/air_admin
+./install.py
+```
