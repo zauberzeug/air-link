@@ -47,6 +47,7 @@ async def startup():
             if payload:
                 await nicegui.air.instance.relay.emit('ssh_data', {'ssh_id': ssh_id, 'payload': payload})
 
+        logging.info(f'ssh connection for {ssh_id} at eof')
         await disconnect_ssh(data)
 
     @nicegui.air.instance.relay.on('disconnect_ssh')
