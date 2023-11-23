@@ -41,7 +41,7 @@ async def startup():
         incoming[ssh_id] = writer
         next_ssh_connection = await asyncio.open_connection('localhost', 22)
         logging.info(f'created new ssh connection for {ssh_id}')
-        await asyncio.sleep(0.2) # give the ssh server some time to send its banner
+        await asyncio.sleep(2) # give the ssh server some time to send its banner
         while not reader.at_eof():
             payload = await reader.read(1024)
             if payload:
