@@ -22,7 +22,7 @@ def main(target_host: str, on_air_token: str, on_air_server: Optional[str] = Non
         'rm air_admin.zip',
         'python3 install.py',
     ]
-    run.sh(f'ssh {target_host} \'{" && ".join(remote_cmds)}\'')
+    run.sh(f'ssh -t {target_host} \'{" && ".join(remote_cmds)}\'')
 
 if __name__ == "__main__":
     typer.run(main)

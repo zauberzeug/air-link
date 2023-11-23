@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import getpass
 import re
 import tempfile
 from pathlib import Path
@@ -7,6 +8,8 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
 import run
+
+run.sudo_password = getpass.getpass(prompt="Enter sudo password: ")
 
 nv_tegra_release_path = Path("/etc/nv_tegra_release")
 if nv_tegra_release_path.is_file():
