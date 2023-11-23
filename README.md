@@ -29,7 +29,7 @@ Host air-preview-rodja
 Bring Air Admin to a new device by calling
 
 ```bash
-./prime.py <target device> <on air token> --on-air-server=<the on air server>
+./deploy.py <target device> <on air token> --on-air-server=<the on air server>
 ```
 
 It will put the air_admin code in the home dir of the user and start a system service.
