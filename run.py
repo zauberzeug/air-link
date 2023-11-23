@@ -29,15 +29,17 @@ def sudo(*cmds:str) -> bool:
     for cmd in cmds:
         try:
             cmd = f'sudo -S {cmd}'
-            process = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-            stdout, stderr = process.communicate(input=sudo_password.encode())
+            print(f'running {cmd}', flush=True)
+            process = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE, encoding='utf8')
+            stdout, stderr = process.communicate(input=sudo_password + '\n')
+            if process.wait() != 0:
+                logging.error(f'failed to run {cmd}: {stdout}\n{stderr}')
+                return False
         except subprocess.CalledProcessError as e:
             logging.error(f'failed to run {cmd}: {e.output}')
             return False
         except Exception as e:
             logging.exception(f'failed to run {cmd}: {str(e)}')
-            return False
-        if process.returncode != 0:
             return False
     return True
 

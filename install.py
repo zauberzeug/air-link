@@ -9,7 +9,8 @@ from jinja2 import Environment, FileSystemLoader
 
 import run
 
-run.sudo_password = getpass.getpass(prompt="Enter sudo password: ")
+if not run.sudo_password:
+    run.sudo_password = getpass.getpass(prompt="Enter sudo password: ")
 
 nv_tegra_release_path = Path("/etc/nv_tegra_release")
 if nv_tegra_release_path.is_file():
@@ -23,12 +24,14 @@ if nv_tegra_release_path.is_file():
         if l4t_release == "32":
             if not run.sh('python3.8 --version'):
                 print('installing Python 3.8', flush=True)
-                run.sudo(
+                if not run.sudo(
                     'apt install software-properties-common -y',
                     'add-apt-repository ppa:deadsnakes/ppa -y',
                     'apt install python3.8 -y',
                     'curl https://bootstrap.pypa.io/get-pip.py | python3.8',
-                )
+                ):
+                    print('failed to install Python 3.8')
+                    exit(1)
             else:
                 print('Python 3.8 already installed',flush=True)
             run.python_cmd = 'python3.8'
