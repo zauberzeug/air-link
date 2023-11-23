@@ -29,7 +29,7 @@ Host air-preview-rodja
 Bring Air Admin to a new device by calling
 
 ```bash
-./deploy.py <target device> <on air token> --on-air-server=<the on air server>
+./deploy.py <target device> --token <on air token> --server <the on air server>
 ```
 
 It will put the air_admin code in the home dir of the user and start a system service.
@@ -39,4 +39,10 @@ You can re-run the installation locally on the device by calling
 ```bash
 cd ~/air_admin
 ./install.py
+```
+
+Simply push latest code without modifying server or token:
+
+```bash
+./deploy.py <target device>
 ```
