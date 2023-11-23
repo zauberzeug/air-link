@@ -23,8 +23,6 @@ nicegui.air.RELAY_HOST = 'https://wasserbauer.zauberzeug.com/'
 @app.on_startup
 async def startup():
     incoming: Dict[str, asyncio.StreamWriter] = {}
-    next_ssh_connection: Tuple[asyncio.StreamReader, asyncio.StreamWriter] = \
-        await asyncio.open_connection('localhost', 22)
 
     @nicegui.air.instance.relay.on('ssh_data')
     def from_socketio_to_tcp(data: Dict[str, Any]) -> None:
@@ -35,13 +33,10 @@ async def startup():
 
     @nicegui.air.instance.relay.on('connect_ssh')
     async def connect_ssh(data: Dict[str, str]) -> None:
-        nonlocal next_ssh_connection
-        reader, writer = next_ssh_connection
+        reader, writer = await asyncio.open_connection('localhost', 22)
         ssh_id = data['ssh_id']
         incoming[ssh_id] = writer
-        next_ssh_connection = await asyncio.open_connection('localhost', 22)
         logging.info(f'created new ssh connection for {ssh_id}')
-        await asyncio.sleep(2) # give the ssh server some time to send its banner
         while not reader.at_eof():
             payload = await reader.read(1024)
             if payload:
