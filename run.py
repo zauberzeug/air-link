@@ -10,6 +10,7 @@ def sh(*cmds:str) -> bool:
         if cmd.startswith('sudo '):
             logging.error('sudo not allowed in sh(), use run.sudo() instead')
         try:
+            #print(f'running: {cmd}', flush=True)
             subprocess.run(cmd, shell=True, check=True)
         except subprocess.CalledProcessError as e:
             logging.error(f'failed to run {cmd}: {e.output}')
@@ -44,4 +45,4 @@ def sudo(*cmds:str) -> bool:
 
 def ssh(target_host:str, *cmds:str) -> bool:
     cmd_chain = ' && '.join(cmds)
-    return sh(f'ssh -t {target_host} \'{cmd_chain}\'')
+    return sh(f'ssh -t {target_host} "{cmd_chain}"')

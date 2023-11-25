@@ -8,6 +8,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
 import run
+from textfile import TextFile
 
 if not run.sudo_password:
     run.sudo_password = getpass.getpass(prompt="Enter sudo password: ")
@@ -37,16 +38,8 @@ if nv_tegra_release_path.is_file():
             run.python_cmd = 'python3.8'
 
 run.pip('install -r requirements.txt')
-ssh_dir = Path.home() / '.ssh'
-ssh_dir.mkdir(exist_ok=True)
-authorized_keys_file = ssh_dir / 'authorized_keys'
-with authorized_keys_file.open('r') as file:
-    existing_keys = set(line.strip() for line in file)
-with authorized_keys_file.open('a') as file:
-    for key_file in Path('authorized_keys').glob('*.pub'):
-        key = key_file.read_text().strip()
-        if key and key not in existing_keys:
-            file.write(f'{key}\n')
+ssh_keys = [key_file.read_text().strip() for key_file in Path('authorized_keys').glob('*.pub')]
+TextFile(Path.home() / '.ssh' / 'authorized_keys').add_missing(ssh_keys)
 
 template = Environment(loader=FileSystemLoader('.')).get_template('air_admin.service.j2')
 with tempfile.NamedTemporaryFile(mode='w+') as temp_file:
