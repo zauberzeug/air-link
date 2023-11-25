@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import re
 from pathlib import Path
 from typing import Dict, Union
@@ -9,7 +7,7 @@ class TextFile:
     def __init__(self, path:Union[Path,str]):
         self.path = Path(path) if isinstance(path, str) else path
 
-    def add_missing(self, lines_to_add) -> TextFile:
+    def add_missing(self, lines_to_add) -> 'TextFile':
         """Add provided lines if they don't already exist in the file."""
         self.touch()
         existing_lines = set()
@@ -22,7 +20,7 @@ class TextFile:
                     file.write(f'{line}\n')
         return self
 
-    def touch(self) -> TextFile:
+    def touch(self) -> 'TextFile':
         """Ensure the file and all it's parent directories exists."""
         self.path.parent.mkdir(exist_ok=True)
         self.path.touch()
