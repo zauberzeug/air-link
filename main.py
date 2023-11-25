@@ -2,12 +2,12 @@
 import asyncio
 import logging
 import os
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Optional
 
 import icecream
 import nicegui.air
 from dotenv import load_dotenv
-from nicegui import app, ui
+from nicegui import app, background_tasks, ui
 
 logging.basicConfig(level=logging.INFO)
 icecream.install()
@@ -35,17 +35,27 @@ async def startup():
 
     @nicegui.air.instance.relay.on('connect_ssh')
     async def connect_ssh(data: Dict[str, str]) -> None:
-        reader, writer = await asyncio.open_connection('localhost', 22)
-        ssh_id = data['ssh_id']
-        incoming[ssh_id] = writer
-        logging.info(f'created new ssh connection for {ssh_id}')
-        while not reader.at_eof():
-            payload = await reader.read(1024)
-            if payload:
-                await nicegui.air.instance.relay.emit('ssh_data', {'ssh_id': ssh_id, 'payload': payload})
+        payload: Optional[bytes] = None
+        try:
+            reader, writer = await asyncio.open_connection('localhost', 22)
+            ssh_id = data['ssh_id']
+            incoming[ssh_id] = writer
+            logging.info(f'created new ssh connection for {ssh_id}')
+            background_tasks.create(outgoing(reader, ssh_id))
+        except Exception as e:
+            logging.exception(f'Unexpected error for ssh_id {ssh_id}: {e}')
 
-        logging.info(f'ssh connection for {ssh_id} at eof')
-        await disconnect_ssh(data)
+    async def outgoing(reader, ssh_id):
+        try:
+            while not reader.at_eof():
+                payload = await reader.read(1024)
+                if payload:
+                    await nicegui.air.instance.relay.emit('ssh_data', {'ssh_id': ssh_id, 'payload': payload})
+        except ConnectionResetError:
+            logging.exception(f'Connection reset by peer for ssh_id {ssh_id}, payload: {payload.decode() if payload else "empty"}')
+        finally:
+            logging.info(f'ssh connection for {ssh_id} at eof or error')
+            await disconnect_ssh({'ssh_id': ssh_id})
 
     @nicegui.air.instance.relay.on('disconnect_ssh')
     async def disconnect_ssh(data: Dict[str, str]) -> None:
