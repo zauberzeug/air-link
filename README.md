@@ -46,3 +46,7 @@ Simply push latest code without modifying server or token:
 ```bash
 ./deploy.py <target device>
 ```
+
+## Development
+
+Air Admin must be compatible with Python 3.6+ to allow old systems like Jetson Orin Nano (with Ubuntu 18.04) to be usable.
