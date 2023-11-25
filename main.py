@@ -16,9 +16,11 @@ load_dotenv('.env')
 if os.environ.get('ON_AIR_SERVER'):
     nicegui.air.RELAY_HOST = os.environ.get('ON_AIR_SERVER')
 
-ui.label('Air Admin').classes('text-4xl')
-nicegui.air.RELAY_HOST = 'https://wasserbauer.zauberzeug.com/'
+if not os.environ.get('ON_AIR_TOKEN'):
+    print('Could not start: ON_AIR_TOKEN environment variable not set and not provided in .env file')
+    exit(1)
 
+ui.label('Air Admin').classes('text-4xl')
 
 @app.on_startup
 async def startup():
@@ -53,4 +55,9 @@ async def startup():
         await writer.wait_closed()
         logging.info(f'ssh connection for {data["ssh_id"]} closed')
 
-ui.run(favicon='⛑', storage_secret='secret', on_air=os.environ.get('ON_AIR_TOKEN'))
+ui.run(
+    favicon='⛑', 
+    storage_secret='secret', 
+    on_air=os.environ.get('ON_AIR_TOKEN'), 
+    reload=os.environ.get('AUTO_RELOAD','').lower() != 'false',
+)
