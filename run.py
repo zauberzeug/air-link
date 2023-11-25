@@ -1,5 +1,6 @@
 import logging
 import os
+import shlex
 import subprocess
 
 python_cmd = 'python3'
@@ -45,6 +46,4 @@ def sudo(*cmds:str) -> bool:
 
 def ssh(target_host:str, *cmds:str) -> bool:
     cmd_chain = ' && '.join(cmds)
-    return sh(f'''ssh -t {target_host} <<'EOF'
-{cmd_chain}
-EOF''')
+    return sh(f'ssh -t {target_host} {shlex.quote(cmd_chain)}')

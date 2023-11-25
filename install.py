@@ -19,9 +19,7 @@ host = HostEnvironment.create()
 run.pip('install -r requirements.txt')
 ssh_keys = [key_file.read_text().strip() for key_file in Path('authorized_keys').glob('*.pub')]
 TextFile(Path.home() / '.ssh' / 'authorized_keys').add_missing(ssh_keys)
-j = json.loads(Path('env_update.json').read_text())
-print(f'env_update.json: {j}')
-TextFile('.env').update_lines(j)
+TextFile('.env').update_lines(json.loads(Path('env_update.json').read_text()))
 
 template = Environment(loader=FileSystemLoader('.')).get_template('air_admin.service.j2')
 with tempfile.NamedTemporaryFile(mode='w+') as temp_file:
