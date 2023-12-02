@@ -35,7 +35,6 @@ async def startup():
 
     @nicegui.air.instance.relay.on('connect_ssh')
     async def connect_ssh(data: Dict[str, str]) -> None:
-        payload: Optional[bytes] = None
         try:
             reader, writer = await asyncio.open_connection('localhost', 22)
             ssh_id = data['ssh_id']
