@@ -12,7 +12,7 @@ Note: Until On Air Server supports "ssh interconnect" login will only work if ed
 Bring Air Admin to a new device by calling
 
 ```bash
-./deploy.py <target device> --token <on air token> --server <the on air server>
+./deploy.py <target device> --token <on air token> [--server <the on air server>]
 ```
 
 It will put the air_admin code in the home dir of the user and start a system service.
