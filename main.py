@@ -52,6 +52,8 @@ async def startup():
                     await nicegui.air.instance.relay.emit('ssh_data', {'ssh_id': ssh_id, 'payload': payload})
         except ConnectionResetError:
             logging.exception(f'Connection reset by peer for ssh_id {ssh_id}, payload: {payload.decode() if payload else "empty"}')
+        except Exception:
+            logging.exception(f'Unexpected error for ssh_id {ssh_id}')
         finally:
             logging.info(f'ssh connection for {ssh_id} at eof or error')
             await disconnect_ssh({'ssh_id': ssh_id})
