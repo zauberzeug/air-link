@@ -1,4 +1,4 @@
-nicegui==1.4.2
+nicegui==1.4.9
 icecream
 typer
 python-dotenv
