@@ -22,7 +22,8 @@ class Jetson(HostEnvironment):
 
     def __init__(self) -> None:
         super().__init__()
-        if self.version.major == '32':
+        print(f'Jetson {self.version} detected', flush=True)
+        if self.version.major == 32:
             if not run.sh('python3.8 --version'):
                 print('installing Python 3.8', flush=True)
                 if not run.sudo(
