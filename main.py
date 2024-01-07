@@ -2,12 +2,12 @@
 import asyncio
 import logging
 import os
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import icecream
-import nicegui.air
 from dotenv import load_dotenv
 from nicegui import app, background_tasks, core, ui
+import nicegui.air
 
 logging.basicConfig(level=logging.INFO)
 icecream.install()
