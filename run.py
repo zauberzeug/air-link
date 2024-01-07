@@ -14,7 +14,6 @@ def sh(*cmds:str) -> bool:
             #print(f'running: {cmd}', flush=True)
             subprocess.run(cmd, shell=True, check=True)
         except subprocess.CalledProcessError as e:
-            logging.error(f'failed to run {cmd}: {e.output}')
             return False
         except Exception:
             logging.exception(f'failed to run {cmd}')
@@ -34,7 +33,6 @@ def sudo(*cmds:str) -> bool:
             process = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE, encoding='utf8')
             stdout, stderr = process.communicate(input=sudo_password + '\n')
             if process.wait() != 0:
-                logging.error(f'failed to run {cmd}: {stdout}\n{stderr}')
                 return False
         except subprocess.CalledProcessError as e:
             logging.error(f'failed to run {cmd}: {e.output}')
@@ -47,3 +45,6 @@ def sudo(*cmds:str) -> bool:
 def ssh(target_host:str, *cmds:str) -> bool:
     cmd_chain = ' && '.join(cmds)
     return sh(f'ssh -t {target_host} {shlex.quote(cmd_chain)}')
+
+def python(cmd:str) -> bool:
+    return sh(f'{python_cmd} -c "{cmd}"')
