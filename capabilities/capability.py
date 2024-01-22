@@ -3,14 +3,14 @@ import abc
 
 class Capability(abc.ABC):
 
-    def ensure(self):
+    def ensure(self) -> None:
         if not self.present():
             self.install()
 
     @abc.abstractmethod
-    def present(self):
-        pass
+    def present(self) -> bool:
+        return False
 
     @abc.abstractmethod
-    def install(self):
+    def install(self) -> None:
         pass

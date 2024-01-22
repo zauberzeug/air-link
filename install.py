@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import getpass
 import json
 import tempfile
@@ -13,12 +12,12 @@ from host_environment import HostEnvironment
 from textfile import TextFile
 
 if not run.sudo_password:
-    run.sudo_password = getpass.getpass(prompt="Enter sudo password: ")
+    run.sudo_password = getpass.getpass(prompt='Enter sudo password: ')
 
 host = HostEnvironment.create()
 
 run.pip('install -r requirements.txt')
-if not run.python('import sys; exit(1) if sys.version_info.micro < 2 else exit(0)'):
+if not run.python('import sys; sys.exit(1) if sys.version_info.micro < 2 else sys.exit(0)'):
     fix.starlette_templating()
 ssh_keys = [key_file.read_text().strip() for key_file in Path('authorized_keys').glob('*.pub')]
 TextFile(Path.home() / '.ssh' / 'authorized_keys').add_missing(ssh_keys)
@@ -34,4 +33,3 @@ with tempfile.NamedTemporaryFile(mode='w+') as temp_file:
         'systemctl enable air_admin.service',
         'systemctl restart air_admin.service',
     )
-

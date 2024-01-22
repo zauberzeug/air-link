@@ -1,13 +1,16 @@
+from __future__ import annotations
+
 import re
 from pathlib import Path
-from typing import Dict, Union
+from typing import Dict, List, Union
 
 
 class TextFile:
-    def __init__(self, path:Union[Path,str]):
+
+    def __init__(self, path: Union[Path, str]) -> None:
         self.path = Path(path) if isinstance(path, str) else path
 
-    def add_missing(self, lines_to_add) -> 'TextFile':
+    def add_missing(self, lines_to_add: List[str]) -> TextFile:
         """Add provided lines if they don't already exist in the file."""
         self.touch()
         existing_lines = set()
@@ -20,13 +23,13 @@ class TextFile:
                     file.write(f'{line}\n')
         return self
 
-    def touch(self) -> 'TextFile':
-        """Ensure the file and all it's parent directories exists."""
+    def touch(self) -> TextFile:
+        """Ensure the file and all its parent directories exists."""
         self.path.parent.mkdir(exist_ok=True)
         self.path.touch()
         return self
 
-    def update_lines(self, updates: Dict[str, str]):
+    def update_lines(self, updates: Dict[str, str]) -> None:
         """Update lines based on a dictionary where keys are regex patterns and values are new lines."""
         self.touch()
         lines = self.path.read_text().splitlines(keepends=True)
