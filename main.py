@@ -25,8 +25,9 @@ ui.label('Air Admin').classes('text-4xl')
 
 
 @app.on_startup
-async def startup():
+async def startup() -> None:
     incoming: Dict[str, asyncio.StreamWriter] = {}
+    assert core.air is not None
 
     @core.air.relay.on('ssh_data')
     def from_socketio_to_tcp(data: Dict[str, Any]) -> None:
@@ -73,5 +74,5 @@ ui.run(
     favicon='⛑',
     storage_secret='secret',
     on_air=os.environ.get('ON_AIR_TOKEN'),
-    reload=os.environ.get('AUTO_RELOAD', '').lower() != 'false',
+    reload=True  # os.environ.get('AUTO_RELOAD', '').lower() != 'false',
 )
