@@ -30,6 +30,8 @@ Simply push latest code without modifying server or token:
 ./deploy.py <target device>
 ```
 
+If you have ssh pub keys in the authorized_keys directory they will be automatically installed on the target.
+
 ### 2. Remote Access
 
 The Air Admin web interface will be reachable through the url provided by NiceGUI On Air.
@@ -37,7 +39,7 @@ For example: <https://on-air.nicegui.io/zauberzeug/rodja>
 
 ### 3. SSH Login
 
-Establish ssh connection to the machine where air admin is running via ProxyJump over the On Air server: `ssh -J zauberzeug/rodja@on-air.nicegui.io rodja@localhost`
+Establish ssh connection to the machine where Air Admin is running via ProxyJump over the On Air server: `ssh -J zauberzeug/rodja@on-air.nicegui.io rodja@localhost`
 
 You can also put the proxy jump into your `~/.ssh/config`:
 
