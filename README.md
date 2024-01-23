@@ -7,7 +7,9 @@ The tool builds upon NiceGUI On Air which allows remote accessing an app running
 
 Note: Until On Air Server supports "SSH interconnect", login will only work if the edge device is in the same region.
 
-### 1. Deploy
+### 1. Register
+
+### 2. Deploy
 
 Bring Air Admin to a new device by calling
 
@@ -32,32 +34,32 @@ To simply push the latest code without modifying server or token, call
 
 If you have ssh pub keys in the authorized_keys directory they will be automatically installed on the target.
 
-### 2. Remote Access
+### 3. Remote Access
 
 The Air Admin web interface will be reachable through the URL provided by NiceGUI On Air,
 for example <https://on-air.nicegui.io/zauberzeug/rodja>.
 
-### 3. SSH Login
+### 4. SSH Login
 
 Establish an SSH connection to the machine where Air Admin is running via proxy jump over the On Air server:
 
 ```bash
-ssh -J zauberzeug/rodja@on-air.nicegui.io rodja@localhost
-```
-
-You can also put the proxy jump into your `~/.ssh/config`:
-
-```
-Host air-preview-rodja
-    HostName localhost
-    User rodja
-    ProxyJump zauberzeug/rodja@on-air.nicegui.io
+ssh -J <your_organization/<your_device_name>@on-air.nicegui.io root@localhost
 ```
 
 Explanation:
-The combination of organization and device ID before the `@on-air.nicegui.io` tells the On Air server where to route the SSH login.
+The combination of organization and device name before the `@on-air.nicegui.io` tells the On Air server where to route the SSH login.
 The last bit tells SSH with which user you want to log into the edge device
 (which is `localhost` after Air Admin received the tunneled data from the On Air server).
+
+You can also put the proxy jump into your `~/.ssh/config` to establish a connection with the bash command `ssh my-device`:
+
+```
+Host my-device
+    User root
+    HostName localhost
+    ProxyJump <your_organization/<your_device_name>@on-air.nicegui.io
+```
 
 ## Development
 

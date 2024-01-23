@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import re
 import sys
 from pathlib import Path
@@ -15,7 +13,7 @@ class HostEnvironment:
         pass
 
     @staticmethod
-    def create() -> HostEnvironment:
+    def create() -> 'HostEnvironment':
         if not Path('/etc/nv_tegra_release').exists():
             raise NotImplementedError('Host environment not recognized')
         return Jetson()
