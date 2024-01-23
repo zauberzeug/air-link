@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import re
+import sys
 from pathlib import Path
 
 from packaging import version
@@ -12,11 +15,11 @@ class HostEnvironment:
         pass
 
     @staticmethod
-    def create() -> 'HostEnvironment':
-        if Path("/etc/nv_tegra_release").exists():
-            return Jetson()
-        else:
-            raise NotImplementedError("Host environment not recognized")
+    def create() -> HostEnvironment:
+        if not Path('/etc/nv_tegra_release').exists():
+            raise NotImplementedError('Host environment not recognized')
+        return Jetson()
+
 
 class Jetson(HostEnvironment):
 
@@ -33,20 +36,18 @@ class Jetson(HostEnvironment):
                     'curl https://bootstrap.pypa.io/get-pip.py | python3.8',
                 ):
                     print('failed to install Python 3.8')
-                    exit(1)
+                    sys.exit(1)
             else:
-                print('Python 3.8 already installed',flush=True)
+                print('Python 3.8 already installed', flush=True)
         run.python_cmd = 'python3.8'
-
 
     @property
     def version(self) -> version.Version:
-        l4t_version_string = Path("/etc/nv_tegra_release").read_text().splitlines()[0]
+        l4t_version_string = Path('/etc/nv_tegra_release').read_text().splitlines()[0]
         l4t_release_match = re.search(r'R(\d+)\s', l4t_version_string)
         l4t_revision_match = re.search(r'REVISION:\s([0-9.]+)', l4t_version_string)
         assert l4t_release_match
         assert l4t_revision_match
         l4t_release = l4t_release_match.group(1)
         l4t_revision = l4t_revision_match.group(1)
-        return version.parse(f"{l4t_release}.{l4t_revision}")
-    
+        return version.parse(f'{l4t_release}.{l4t_revision}')

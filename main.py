@@ -2,6 +2,7 @@
 import asyncio
 import logging
 import os
+import sys
 from typing import Any, Dict
 
 import icecream
@@ -18,9 +19,10 @@ if 'ON_AIR_SERVER' in os.environ:
 
 if not os.environ.get('ON_AIR_TOKEN'):
     print('Could not start: ON_AIR_TOKEN environment variable not set and not provided in .env file')
-    exit(1)
+    sys.exit(1)
 
 ui.label('Air Admin').classes('text-4xl')
+
 
 @app.on_startup
 async def startup():
@@ -51,7 +53,8 @@ async def startup():
                 if payload:
                     await core.air.relay.emit('ssh_data', {'ssh_id': ssh_id, 'payload': payload})
         except ConnectionResetError:
-            logging.exception(f'Connection reset by peer for ssh_id {ssh_id}, payload: {payload.decode() if payload else "empty"}')
+            logging.exception(f'Connection reset by peer for ssh_id {ssh_id}, '
+                              f'payload: {payload.decode() if payload else "empty"}')
         except Exception:
             logging.exception(f'Unexpected error for ssh_id {ssh_id}')
         finally:
@@ -67,8 +70,8 @@ async def startup():
         logging.info(f'ssh connection for {data["ssh_id"]} closed')
 
 ui.run(
-    favicon='⛑', 
-    storage_secret='secret', 
-    on_air=os.environ.get('ON_AIR_TOKEN'), 
-    reload=os.environ.get('AUTO_RELOAD','').lower() != 'false',
+    favicon='⛑',
+    storage_secret='secret',
+    on_air=os.environ.get('ON_AIR_TOKEN'),
+    reload=os.environ.get('AUTO_RELOAD', '').lower() != 'false',
 )
