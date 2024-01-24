@@ -9,6 +9,10 @@ Note: Until On Air Server supports "SSH interconnect", login will only work if t
 
 ### 1. Register
 
+Create a new device in the On Air web interface and note token and passphrase.
+By convention the name should be `<device name>-admin`.
+That way the descriptive device name without the postfix `-admin` is still free for the an actual application using the On Air service.
+
 ### 2. Deploy
 
 Bring Air Admin to a new device by calling
