@@ -1,4 +1,4 @@
-#nicegui==1.4.12
+#nicegui==1.4.21
 git+https://github.com/zauberzeug/nicegui.git@air_reconnect#egg=nicegui
 icecream
 typer
