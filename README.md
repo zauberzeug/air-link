@@ -5,13 +5,13 @@ The tool builds upon NiceGUI On Air which allows remote accessing an app running
 
 ## Usage
 
-Note: Until On Air Server supports "SSH interconnect", login will only work if the edge device is in the same region.
-
 ### 1. Register
 
 Create a new device in the On Air web interface and note token and passphrase.
 By convention the name should be `<device name>-admin`.
 That way the descriptive device name without the postfix `-admin` is still free for the an actual application using the On Air service.
+
+NOTE: ensure to set a fixed region for the device to ensure it does not accidentally move to a different region.
 
 ### 2. Deploy
 
