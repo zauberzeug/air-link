@@ -1,5 +1,4 @@
-#nicegui==1.4.21
-git+https://github.com/zauberzeug/nicegui.git@air_reconnect#egg=nicegui
+nicegui==1.4.20
 icecream
 typer
 python-dotenv
