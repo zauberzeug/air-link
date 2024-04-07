@@ -2,4 +2,3 @@ nicegui==1.4.20
 icecream
 typer
 python-dotenv
-aiohttp # without this we get engineio warnings
