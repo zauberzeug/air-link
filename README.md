@@ -9,9 +9,9 @@ The tool builds upon NiceGUI On Air which allows remote accessing an app running
 
 Create a new device in the On Air web interface and note token and passphrase.
 By convention the name should be `<device name>-admin`.
-That way the descriptive device name without the postfix `-admin` is still free for the an actual application using the On Air service.
+That way the descriptive device name without the postfix `-admin` is still free for the actual application using the On Air service.
 
-NOTE: ensure to set a fixed region for the device to ensure it does not accidentally move to a different region.
+NOTE: Make sure to set a fixed region for the device to ensure it does not accidentally move to a different region.
 
 ### 2. Deploy
 
@@ -36,7 +36,7 @@ To simply push the latest code without modifying server or token, call
 ./deploy.py <target device>
 ```
 
-If you have ssh pub keys in the authorized_keys directory they will be automatically installed on the target.
+If you have SSH pub keys in the authorized_keys directory, they will be automatically installed on the target.
 
 ### 3. Remote Access
 
@@ -70,7 +70,7 @@ Host my-device
 ## Design Decisions
 
 - Provide SSH access to the edge device through the websocket tunnel from NiceGUI On Air.
-- Run side-by-side with user apps, because deploying/braking a user app should not affect remote access.
+- Run side-by-side with user apps, because deploying/breaking a user app should not affect remote access.
 - Focus on Linux-based systems.
 - Be compatible with Jetson Orin Nano (Ubuntu 18.04), which requires parts of the code to work with Python 3.6+.
 - Offer classes and functions to install and manage software (like `run.pip`, `TextFile('.env').update_lines({})`).
