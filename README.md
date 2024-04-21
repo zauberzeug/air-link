@@ -18,10 +18,12 @@ NOTE: Make sure to set a fixed region for the device to ensure it does not accid
 Bring Air Admin to a new device by calling
 
 ```bash
-./deploy.py <target device> --token <on air token> [--server <the on air server>]
+./deploy.py <target device> [--token <on air token>] [--server <the on air server>]
 ```
 
 It will put the Air Admin code in the home directory of the user and start a system service.
+The token (and server) will be stored in `~/air_admin/.env` where it can be changed later.
+If no token is provided in the deploy arguments the configuration in the `.env` will be kept.
 
 You can re-run the installation locally on the device by calling
 
