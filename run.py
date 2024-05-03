@@ -28,13 +28,14 @@ def pip(cmd: str) -> bool:
 def sudo(*cmds: str) -> bool:
     if not sudo_password:
         logging.error(f'running {cmds} failed.'
-                      'sudo password not set; we suggest: sudo_password = getpass.getpass(prompt="Enter sudo password: ")')
+                      'sudo password not set; '
+                      'we suggest: sudo_password = getpass.getpass(prompt="Enter sudo password: ")')
         return False
     for cmd in cmds:
+        sudo_cmd = f'sudo -S {cmd}'
         try:
-            cmd = f'sudo -S {cmd}'
             # print(f'running: {cmd}', flush=True)
-            with subprocess.Popen(cmd,
+            with subprocess.Popen(sudo_cmd,
                                   shell=True,
                                   stdin=subprocess.PIPE,
                                   stderr=subprocess.PIPE,
@@ -44,10 +45,10 @@ def sudo(*cmds: str) -> bool:
                 if process.wait() != 0:
                     return False
         except subprocess.CalledProcessError as e:
-            logging.error(f'failed to run {cmd}: {e.output}')
+            logging.error(f'failed to run {sudo_cmd}: {e.output}')
             return False
         except Exception as e:
-            logging.exception(f'failed to run {cmd}: {str(e)}')
+            logging.exception(f'failed to run {sudo_cmd}: {e}')
             return False
     return True
 

@@ -1,9 +1,0 @@
-.git/
-__pycache__/
-.mypy_cache/
-.DS_Store
-*.tmp
-.env
-.vscode/
-air-admin.zip
-.pytest_cache

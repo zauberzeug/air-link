@@ -1,4 +1,0 @@
-nicegui==1.4.20
-icecream
-typer
-python-dotenv
