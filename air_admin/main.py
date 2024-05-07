@@ -16,4 +16,4 @@ if 'ON_AIR_SERVER' in os.environ:
 
 create_main_page()
 
-ui.run(favicon='⛑')
+ui.run(favicon='⛑', reload=False)
