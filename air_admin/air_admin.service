@@ -8,7 +8,7 @@ ExecStart=/usr/bin/env bash -i -c ./main.py
 WorkingDirectory=/home/zauberzeug/air_admin
 User=zauberzeug
 Group=zauberzeug
-Restart=on-abort
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
