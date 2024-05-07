@@ -16,6 +16,7 @@ class AuthorizedKeysDialog(ui.dialog):
         rows = [
             {'name': line.split()[2], 'type': line.split()[0], 'key': line.split()[1]}
             for line in path.read_text().splitlines()
+            if line.split() and not line.startswith('#')
         ]
         self.clear()
         with self.props('full-width'), ui.card():
