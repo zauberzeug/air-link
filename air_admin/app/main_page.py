@@ -1,19 +1,7 @@
-import re
-from pathlib import Path
-from typing import List
-
 from nicegui import app, ui
 
 from .authorized_keys import AuthorizedKeysDialog
-from .package import install
-
-PACKAGES_PATH = Path('~/packages').expanduser()
-PACKAGES_PATH.mkdir(exist_ok=True)
-
-
-def sorted_nicely(list_: List[str]) -> List[str]:
-    # https://stackoverflow.com/a/2669120/3419103
-    return sorted(list_, key=lambda key: [int(c) if c.isdigit() else c for c in re.split('([0-9]+)', key)])
+from .package import PACKAGES_PATH, find_packages, install_package
 
 
 def create_page() -> None:
@@ -43,13 +31,13 @@ def create_page() -> None:
 
         ui.label('Packages').classes('text-2xl')
         with ui.row():
-            zips = sorted_nicely([path.name for path in PACKAGES_PATH.glob('*.zip')])
+            zips = find_packages()
             if zips:
                 for name in zips:
                     with ui.card().props('flat bordered'):
                         ui.label(name)
                         ui.button('Install', icon='sym_o_deployed_code_update',
-                                  on_click=lambda name=name: install(name)) \
+                                  on_click=lambda name=name: install_package(PACKAGES_PATH / name)) \
                             .props('flat dense')
             else:
                 ui.label('No packages found.')
