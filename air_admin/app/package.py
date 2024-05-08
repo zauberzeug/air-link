@@ -1,4 +1,5 @@
 import logging
+import os
 import re
 import shutil
 import zipfile
@@ -27,13 +28,16 @@ def install_package(path: Path) -> None:
     logging.info(f'Extracting {path}...')
     shutil.rmtree(TARGET)
     with zipfile.ZipFile(path, 'r') as zip_ref:
-        zip_ref.extractall(TARGET)
+        members = zip_ref.infolist()
+        for member in members:
+            extracted_path = zip_ref.extract(member, TARGET)
+            os.chmod(extracted_path, member.external_attr >> 16)
     logging.info('...done!')
 
     Path(TARGET / '.env').write_text(app.storage.general.get('env', ''))
 
     logging.info('Running install script...')
-    run.sh(f'cd {TARGET}', './install.sh')
+    run.sh(f'cd {TARGET}; ./install.sh')
     logging.info('...done!')
 
     Path(PACKAGES_PATH / 'current_version.txt').write_text(f'./{path.name}')
