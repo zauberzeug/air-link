@@ -1,7 +1,7 @@
 from nicegui import app, ui
 
 from .authorized_keys import AuthorizedKeysDialog
-from .package import PACKAGES_PATH, find_packages, install_package
+from .package import add_package, show_packages
 
 
 def create_page() -> None:
@@ -30,14 +30,5 @@ def create_page() -> None:
         ui.codemirror().bind_value(app.storage.general, 'env').classes('h-32 border')
 
         ui.label('Packages').classes('text-2xl')
-        with ui.row():
-            zips = find_packages()
-            if zips:
-                for name in zips:
-                    with ui.card().props('flat bordered'):
-                        ui.label(name)
-                        ui.button('Install', icon='sym_o_deployed_code_update',
-                                  on_click=lambda name=name: install_package(PACKAGES_PATH / name)) \
-                            .props('flat dense')
-            else:
-                ui.label('No packages found.')
+        show_packages()
+        ui.upload(label='Upload package', auto_upload=True, on_upload=add_package).props('flat bordered accept=.zip')
