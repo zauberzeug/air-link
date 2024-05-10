@@ -2,6 +2,36 @@
 
 Air Admin is a standalone service to manage remote access to an edge device and to install user apps.
 
+## Prerequisites
+
+The edge device needs to run a Linux-based OS and have Python >=3.8 installed.
+
+> [!NOTE]
+> To install a recent Python version like 3.11, you can use [pyenv](https://github.com/pyenv/pyenv):
+>
+> ```bash
+> # install dependencies
+> sudo apt update
+> sudo apt install build-essential libssl-dev zlib1g-dev \
+> libbz2-dev libreadline-dev libsqlite3-dev curl \
+> libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+>
+> # install pyenv
+> curl https://pyenv.run | bash
+>
+> # add pyenv to shell
+> echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+> echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+> echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+>
+> # source the bashrc
+> source ~/.bashrc
+>
+> # install Python 3.11
+> pyenv install 3.11
+> pyenv global 3.11
+> ```
+
 ## Setup
 
 ### 1. Deploy the Air Admin app to a new device
@@ -14,7 +44,26 @@ Run the following command on the developer machine to deploy the Air Admin app t
 
 It will copy the Air Admin app into the home directory of the edge device and start it in a system service.
 The app is accessible on port 8080 and can be reached via the IP address of the edge device.
+
+> [!NOTE]
+> To make the app accessible over an SSH tunnel, you can log into the edge device with the following command:
+>
+> ```bash
+> ssh -L 8888:localhost:8080 w4
+> ```
+>
+> The app will then be reachable at `localhost:8888` on the developer machine.
+
 The system service will automatically start the app after a reboot.
+
+> [!TIP]
+> To display the logs of the Air Admin service, use the following command:
+>
+> ```bash
+> journalctl -u air-admin -f
+> ```
+>
+> The `-f` flag will follow the logs in real-time.
 
 ### 2. Access via NiceGUI On Air
 
@@ -52,14 +101,15 @@ The combination of organization and device name before the `@on-air.nicegui.io` 
 The last bit tells SSH with which user you want to log into the edge device
 (which is `localhost` after Air Admin received the tunneled data from the On Air server).
 
-You can also put the proxy jump into your `~/.ssh/config` to establish a connection with the bash command `ssh my-device`:
-
-```
-Host my-device
-    User root
-    HostName localhost
-    ProxyJump <your_organization/<your_device_name>@on-air.nicegui.io
-```
+> [!TIP]
+> You can also put the proxy jump into your `~/.ssh/config` to establish a connection with the bash command `ssh my-device`:
+>
+> ```
+> Host my-device
+>     User root
+>     HostName localhost
+>     ProxyJump <your_organization/<your_device_name>@on-air.nicegui.io
+> ```
 
 ## Development
 
