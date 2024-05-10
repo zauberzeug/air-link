@@ -1,51 +1,45 @@
 # Air Admin
 
-Air Admin is a standalone service to administer an edge device.
-The tool builds upon NiceGUI On Air which allows remote accessing an app running on some edge device.
+Air Admin is a standalone service to manage remote access to an edge device and to install user apps.
 
-## Usage
+## Setup
 
-### 1. Register
+### 1. Deploy the Air Admin app to a new device
 
-Create a new device in the On Air web interface and note token and passphrase.
-By convention the name should be `<device name>-admin`.
-That way the descriptive device name without the postfix `-admin` is still free for the actual application using the On Air service.
-
-NOTE: Make sure to set a fixed region for the device to ensure it does not accidentally move to a different region.
-
-### 2. Deploy
-
-Bring Air Admin to a new device by calling
-
-```bash
-./deploy.py <target device> [--token <on air token>] [--server <the on air server>]
-```
-
-It will put the Air Admin code in the home directory of the user and start a system service.
-The token (and server) will be stored in `~/air_admin/.env` where it can be changed later.
-If no token is provided in the deploy arguments the configuration in the `.env` will be kept.
-
-You can re-run the installation locally on the device by calling
-
-```bash
-cd ~/air_admin
-./install.py
-```
-
-To simply push the latest code without modifying server or token, call
+Run the following command on the developer machine to deploy the Air Admin app to an edge device.
 
 ```bash
 ./deploy.py <target device>
 ```
 
-If you have SSH pub keys in the authorized_keys directory, they will be automatically installed on the target.
+It will copy the Air Admin app into the home directory of the edge device and start it in a system service.
+The app is accessible on port 8080 and can be reached via the IP address of the edge device.
+The system service will automatically start the app after a reboot.
 
-### 3. Remote Access
+### 2. Access via NiceGUI On Air
 
-The Air Admin web interface will be reachable through the URL provided by NiceGUI On Air,
-for example <https://on-air.nicegui.io/zauberzeug/rodja>.
+To make the Air Admin app accessible via NiceGUI On Air, follow these three steps:
 
-### 4. SSH Login
+1.  Register a new device with a fixed region at <https://on-air.nicegui.io>.
+2.  Enter the token in the top right corner of the Air Admin web interface.
+3.  Restart the Air Admin service using the button next to the token.
+
+Air Admin will be reachable through the URL provided by NiceGUI On Air, for example <https://on-air.nicegui.io/zauberzeug/rodja-admin>.
+
+### 3. Manage SSH keys (optional)
+
+To allow SSH access without a password, you can add SSH keys to the edge device using the Air Admin web interface.
+Use the key icon in the top right corner to open the SSH key management.
+
+## Usage
+
+### Install User Apps
+
+You can install user apps via the Air Admin web interface.
+The web interface lists all available packages and provides a button to upload additional ZIP files.
+The install button runs the `install.sh` script from the ZIP file and outputs the process in the web interface.
+
+### SSH Login via NiceGUI On Air
 
 Establish an SSH connection to the machine where Air Admin is running via proxy jump over the On Air server:
 
@@ -69,13 +63,11 @@ Host my-device
 
 ## Development
 
-## Design Decisions
+### Design Decisions
 
-- Provide SSH access to the edge device through the websocket tunnel from NiceGUI On Air.
+- Assume an edge device with a Linux-based OS and Python >=3.8.
 - Run side-by-side with user apps, because deploying/breaking a user app should not affect remote access.
-- Focus on Linux-based systems.
-- Be compatible with Jetson Orin Nano (Ubuntu 18.04), which requires parts of the code to work with Python 3.6+.
-- Offer classes and functions to install and manage software (like `run.pip`, `TextFile('.env').update_lines({})`).
+- Provide SSH access to the edge device through the websocket tunnel from NiceGUI On Air.
 
 ### Testing Locally
 
