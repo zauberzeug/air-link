@@ -2,12 +2,12 @@ import logging
 import os
 import re
 import shutil
+import subprocess
 import zipfile
 from pathlib import Path
 from typing import List
 
-from nicegui import app, events, ui
-from utils import run
+from nicegui import app, events, run, ui
 
 PACKAGES_PATH = Path('~/packages').expanduser()
 PACKAGES_PATH.mkdir(exist_ok=True)
@@ -49,7 +49,7 @@ def remove_package(path: Path) -> None:
     show_packages.refresh()
 
 
-def install_package(path: Path) -> None:
+async def install_package(path: Path) -> None:
     logging.info(f'Extracting {path}...')
     shutil.rmtree(TARGET)
     with zipfile.ZipFile(path, 'r') as zip_ref:
@@ -62,7 +62,31 @@ def install_package(path: Path) -> None:
     Path(TARGET / '.env').write_text(app.storage.general.get('env', ''))
 
     logging.info('Running install script...')
-    run.sh(f'cd {TARGET}; ./install.sh')
+    with ui.dialog(value=True).props('maximized persistent') as dialog, ui.card():
+        with ui.row().classes('w-full items-center'):
+            ui.label(f'Installing {path.stem}...').classes('text-2xl')
+            spinner = ui.spinner(type='gears', size='md', color='gray-500')
+            ui.space()
+            close_button = ui.button(icon='close', on_click=dialog.close).props('flat round color=gray-500')
+            close_button.visible = False
+        log = ui.log().classes('h-full')
+        await run_sh(f'cd {TARGET}; ./install.sh', log)
+        spinner.visible = False
+        close_button.visible = True
+        ui.notification('Installation complete', icon='done', type='positive')
     logging.info('...done!')
 
     CURRENT_VERSION_PATH.write_text(f'./{path.name}')
+
+
+async def run_sh(command: str, log: ui.log) -> None:
+    with subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) as process:
+        assert process.stdout is not None
+        assert process.stderr is not None
+        while True:
+            output = await run.io_bound(process.stdout.readline)
+            if output == '' and process.poll() is not None:
+                break
+            log.push(output)
+        log.push(process.stderr.read())
+        ui.run_javascript(f'getElement({log.id}).scrollTop = getElement({log.id}).scrollHeight')
