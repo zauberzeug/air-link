@@ -31,6 +31,5 @@ def create_page() -> None:
 
         ui.label('Packages').classes('text-2xl')
         show_packages()
-        upload = ui.upload(label='Upload package', auto_upload=True, on_upload=add_package).props('accept=.zip')
-        upload.classes('h-0 overflow-hidden -mt-4')
+        upload = ui.upload(auto_upload=True, on_upload=add_package).props('accept=.zip').classes('hidden')
         ui.button('Upload package', icon='upload', on_click=lambda: upload.run_method('pickFiles')).props('outline')

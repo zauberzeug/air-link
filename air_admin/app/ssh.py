@@ -5,7 +5,7 @@ from typing import Any, Dict
 from nicegui import background_tasks, core
 
 
-def setup():
+def setup() -> None:
     incoming: Dict[str, asyncio.StreamWriter] = {}
     assert core.air is not None
 

@@ -11,6 +11,7 @@ from utils import run
 
 PACKAGES_PATH = Path('~/packages').expanduser()
 PACKAGES_PATH.mkdir(exist_ok=True)
+CURRENT_VERSION_PATH = Path(PACKAGES_PATH / 'current_version.txt')
 
 TARGET = Path('~/robot').expanduser()
 
@@ -23,7 +24,7 @@ def sorted_nicely(paths: List[Path]) -> List[Path]:
 @ui.refreshable
 def show_packages() -> ui.row:
     paths = sorted_nicely(list(PACKAGES_PATH.glob('*.zip')))
-    current_version = Path(Path(PACKAGES_PATH / 'current_version.txt').read_text()).stem
+    current_version = Path(CURRENT_VERSION_PATH.read_text()).stem if CURRENT_VERSION_PATH.exists() else None
     with ui.row(wrap=False).classes('w-full overflow-scroll') as row:
         for path in reversed(paths):
             with ui.card().tight().props('flat bordered'):
@@ -64,4 +65,4 @@ def install_package(path: Path) -> None:
     run.sh(f'cd {TARGET}; ./install.sh')
     logging.info('...done!')
 
-    Path(PACKAGES_PATH / 'current_version.txt').write_text(f'./{path.name}')
+    CURRENT_VERSION_PATH.write_text(f'./{path.name}')
