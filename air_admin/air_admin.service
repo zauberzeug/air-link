@@ -5,9 +5,9 @@ After=multi-user.target
 [Service]
 Type=simple
 ExecStart=/usr/bin/env bash -i -c ./main.py
-WorkingDirectory=/home/zauberzeug/air_admin
-User=zauberzeug
-Group=zauberzeug
+WorkingDirectory=/home/USER/air_admin
+User=USER
+Group=USER
 Restart=always
 
 [Install]

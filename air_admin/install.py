@@ -10,6 +10,7 @@ run.pip('install -r requirements.txt')
 
 run.sudo(
     'cp air_admin.service /etc/systemd/system/air_admin.service',
+    'sed -i "s/USER/$USER/g" /etc/systemd/system/air_admin.service',
     'systemctl daemon-reload',
     'systemctl enable air_admin.service',
     'systemctl restart air_admin.service',
