@@ -8,7 +8,7 @@ def create_page() -> None:
     @ui.page('/')
     def main_page():
         with ui.header().classes('items-center'):
-            ui.label('Air Admin').classes('text-4xl')
+            ui.label('Air Link').classes('text-4xl')
 
             ui.space()
 
@@ -19,11 +19,11 @@ def create_page() -> None:
 
             ui.separator().props('vertical')
 
-            ui.input('Air Admin Token', password=True, password_toggle_button=True) \
-                .bind_value(app.storage.general, 'air_admin_token') \
+            ui.input('Air Link Token', password=True, password_toggle_button=True) \
+                .bind_value(app.storage.general, 'air_link_token') \
                 .props('dark')
             ui.button(on_click=app.shutdown, icon='power_settings_new') \
-                .tooltip('Restart Air Admin') \
+                .tooltip('Restart Air Link') \
                 .props('flat round color=white')
 
         ui.label('Environment variables').classes('text-2xl')

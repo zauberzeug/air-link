@@ -9,9 +9,9 @@ if not run.sudo_password:
 run.pip('install -r requirements.txt')
 
 run.sudo(
-    'cp air_admin.service /etc/systemd/system/air_admin.service',
-    'sed -i "s/USER/$USER/g" /etc/systemd/system/air_admin.service',
+    'cp air_link.service /etc/systemd/system/air_link.service',
+    'sed -i "s/USER/$USER/g" /etc/systemd/system/air_link.service',
     'systemctl daemon-reload',
-    'systemctl enable air_admin.service',
-    'systemctl restart air_admin.service',
+    'systemctl enable air_link.service',
+    'systemctl restart air_link.service',
 )

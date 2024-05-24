@@ -1,11 +1,11 @@
 [Unit]
-Description=Air Admin
+Description=Air Link
 After=multi-user.target
 
 [Service]
 Type=simple
 ExecStart=/usr/bin/env bash -i -c ./main.py
-WorkingDirectory=/home/USER/air_admin
+WorkingDirectory=/home/USER/air_link
 User=USER
 Group=USER
 Restart=always
