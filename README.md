@@ -60,7 +60,7 @@ The system service will automatically start the app after a reboot.
 > To display the logs of the Air Link service, use the following command:
 >
 > ```bash
-> journalctl -u air-link -f
+> journalctl -u air_link -f
 > ```
 >
 > The `-f` flag will follow the logs in real-time.
