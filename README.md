@@ -73,7 +73,8 @@ To make the Air Link app accessible via NiceGUI On Air, follow these three steps
 2.  Enter the token in the top right corner of the Air Link web interface.
 3.  Restart the Air Link service using the button next to the token.
 
-Air Link will be reachable through the URL provided by NiceGUI On Air, for example <https://on-air.nicegui.io/zauberzeug/rodja-air-link>.
+Air Link will be reachable through the URL provided by NiceGUI On Air, for example <https://europe.on-air.io/zauberzeug/rodja-air-link>.
+We strongly suggest to set a fixed region for the device at <https://on-air.nicegui.io> to keep the URL stable.
 
 ### 3. Manage SSH keys (optional)
 
@@ -93,11 +94,11 @@ The install button runs the `install.sh` script from the ZIP file and outputs th
 Establish an SSH connection to the machine where Air Link is running via proxy jump over the On Air server:
 
 ```bash
-ssh -J <your_organization/<your_device_name>@on-air.nicegui.io root@localhost
+ssh -J <your_organization>/<your_device_name>@<your_region>.on-air.io <username_on_device>@localhost
 ```
 
 Explanation:
-The combination of organization and device name before the `@on-air.nicegui.io` tells the On Air server where to route the SSH login.
+The combination of organization and device name before the `@<region>.on-air.io` tells the On Air server where to route the SSH login.
 The last bit tells SSH with which user you want to log into the edge device
 (which is `localhost` after Air Link received the tunneled data from the On Air server).
 
@@ -106,9 +107,19 @@ The last bit tells SSH with which user you want to log into the edge device
 >
 > ```
 > Host my-device
->     User root
+>     User <your_username>
 >     HostName localhost
->     ProxyJump <your_organization/<your_device_name>@on-air.nicegui.io
+>     ProxyJump <your_organization>/<your_device_name>@<your_region>.on-air.io
+> ```
+>
+> It may also be beneficial to add the following configuration to the host entry:
+>
+> ```
+>     StrictHostKeyChecking no
+>     UserKnownHostsFile /dev/null
+>     ServerAliveInterval 30
+>     ForwardAgent yes
+>     SetEnv GIT_AUTHOR_NAME="Your Name" EMAIL="your.email@example.com"
 > ```
 
 ## Development
