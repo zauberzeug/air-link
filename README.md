@@ -119,7 +119,7 @@ The last bit tells SSH with which user you want to log into the edge device
 >     UserKnownHostsFile /dev/null
 >     ServerAliveInterval 30
 >     ForwardAgent yes
->     SetEnv GIT_AUTHOR_NAME="Your Name" EMAIL="your.email@example."
+>     SetEnv GIT_AUTHOR_NAME="Your Name" EMAIL="your.email@example.com"
 > ```
 
 ## Development
