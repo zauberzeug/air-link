@@ -14,6 +14,7 @@ PACKAGES_PATH.mkdir(exist_ok=True)
 CURRENT_VERSION_PATH = Path(PACKAGES_PATH / 'current_version.txt')
 
 TARGET = Path('~/robot').expanduser()
+TARGET.mkdir(exist_ok=True)
 
 
 def sorted_nicely(paths: List[Path]) -> List[Path]:
@@ -51,10 +52,7 @@ def remove_package(path: Path) -> None:
 
 async def install_package(path: Path) -> None:
     logging.info(f'Extracting {path}...')
-    try:
-        shutil.rmtree(TARGET)
-    except FileNotFoundError:
-        pass
+    shutil.rmtree(TARGET)
     with zipfile.ZipFile(path, 'r') as zip_ref:
         members = zip_ref.infolist()
         for member in members:
