@@ -51,7 +51,10 @@ def remove_package(path: Path) -> None:
 
 async def install_package(path: Path) -> None:
     logging.info(f'Extracting {path}...')
-    shutil.rmtree(TARGET)
+    try:
+        shutil.rmtree(TARGET)
+    except FileNotFoundError:
+        pass
     with zipfile.ZipFile(path, 'r') as zip_ref:
         members = zip_ref.infolist()
         for member in members:
