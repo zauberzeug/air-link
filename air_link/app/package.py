@@ -14,6 +14,7 @@ PACKAGES_PATH.mkdir(exist_ok=True)
 CURRENT_VERSION_PATH = Path(PACKAGES_PATH / 'current_version.txt')
 
 TARGET = Path('~/robot').expanduser()
+TARGET.mkdir(exist_ok=True)
 
 
 def sorted_nicely(paths: List[Path]) -> List[Path]:
