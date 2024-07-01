@@ -2,7 +2,7 @@ from nicegui import app, ui
 
 from .authorized_keys import AuthorizedKeysDialog
 from .package import add_package, show_packages
-from .system import show_disk_space
+from .system import docker_prune_preview, show_disk_space
 
 
 def create_page() -> None:
@@ -39,3 +39,5 @@ def create_page() -> None:
         with ui.row(wrap=False).classes('items-center'):
             show_disk_space()
             ui.button(icon='refresh', on_click=show_disk_space.refresh).props('flat outline')
+
+        docker_prune_preview()
