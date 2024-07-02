@@ -7,9 +7,15 @@ from nicegui import ui
 @ui.refreshable
 def show_disk_space() -> None:
     total, _, free = shutil.disk_usage('/')
-    label = ui.label(f'Free disk space: {free / 2**30:.1f} GB / {total / 2**30:.1f} GB')
-    if free / total < 0.1:
-        label.classes('text-negative').tooltip(f'Low disk space! {free / total:.1%} left')
+    with ui.card().tight().props('flat bordered'):
+        with ui.card_section().classes('w-full bg-gray-100'):
+            with ui.row().classes('w-full items-center justify-between'):
+                ui.label('Disk space').classes('text-lg text-bold')
+                ui.button(icon='refresh', on_click=show_disk_space.refresh).props('flat outline')
+        with ui.card_section():
+            label = ui.label(f'Free disk space: {free / 2**30:.1f} GB / {total / 2**30:.1f} GB')
+            if free / total < 0.1:
+                label.classes('text-negative').tooltip(f'Low disk space! {free / total:.1%} left')
 
 
 def _get_docker_client() -> docker.DockerClient | None:
