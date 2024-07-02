@@ -73,15 +73,16 @@ def docker_prune_preview() -> None:
                 ui.label('Docker').classes('text-lg text-bold')
                 ui.button(icon='refresh', on_click=docker_prune_preview.refresh).props('flat outline')
         with ui.card_section():
-            with ui.grid(columns='auto auto auto').classes('items-center'):
+            with ui.grid(columns='auto auto auto').classes('items-center gap-y-2'):
                 for count, label, key in [
                     (dangling_images, 'Dangling images', 'images'),
                     (stopped_containers, 'Stopped containers', 'containers'),
                     (unused_volumes, 'Unused volumes', 'volumes'),
                     (unused_networks, 'Unused networks', 'networks'),
+                    (None, 'Build cache', 'caches'),
                 ]:
-                    ui.label(f'{count}').classes('text-bold')
+                    ui.label(f'{count if count is not None else ""}').classes('text-bold text-right')
                     ui.label(label).classes('text-sm text-gray-500')
-                    ui.button(icon='delete', on_click=lambda k=key: docker_prune(k), color='negative').props('flat')
-        with ui.card_section():
-            ui.button('Prune cache', color='negative', on_click=lambda: docker_prune('caches')).props('flat outline')
+                    with ui.button(icon='arrow_drop_down').props('flat dense'):
+                        with ui.menu():
+                            ui.menu_item('Delete', on_click=lambda k=key: docker_prune(k)).classes('text-negative')
