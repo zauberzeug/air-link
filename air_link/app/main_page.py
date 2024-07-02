@@ -2,7 +2,7 @@ from nicegui import app, ui
 
 from .authorized_keys import AuthorizedKeysDialog
 from .package import add_package, show_packages
-from .system import show_disk_space
+from .system import docker_prune_preview, show_disk_space
 
 
 def create_page() -> None:
@@ -36,6 +36,6 @@ def create_page() -> None:
         ui.button('Upload package', icon='upload', on_click=lambda: upload.run_method('pickFiles')).props('outline')
 
         ui.label('System').classes('text-2xl')
-        with ui.row(wrap=False).classes('items-center'):
+        with ui.row().classes('w-full'):
             show_disk_space()
-            ui.button(icon='refresh', on_click=show_disk_space.refresh).props('flat outline')
+            docker_prune_preview()
