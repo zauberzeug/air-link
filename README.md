@@ -49,7 +49,7 @@ The app is accessible on port 8080 and can be reached via the IP address of the 
 > To make the app accessible over an SSH tunnel, you can log into the edge device with the following command:
 >
 > ```bash
-> ssh -L 8888:localhost:8080 w4
+> ssh -L 8888:localhost:8080 <target device>
 > ```
 >
 > The app will then be reachable at `localhost:8888` on the developer machine.
