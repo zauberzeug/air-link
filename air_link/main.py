@@ -1,20 +1,15 @@
 #!/usr/bin/env python3
-import logging
+import argparse
 
-from app import create_main_page, setup_ssh
-from nicegui import app, ui
+from app import run
+from install import install
 
-logging.basicConfig(level=logging.INFO)
-logging.getLogger('watchfiles').setLevel(logging.WARNING)
+parser = argparse.ArgumentParser('Air Link', description='SSH access, diagnostics and administration for edge devices.')
+parser.add_argument('action', choices=['install', 'run'], help='action to perform', default='run')
+args = parser.parse_args()
 
-if app.storage.general.get('air_link_token'):
-    app.on_startup(setup_ssh)
+if args.action == 'run':
+    run()
 
-create_main_page()
-
-ui.run(
-    title='Air Link',
-    favicon='⛑',
-    reload=False,
-    on_air=app.storage.general.get('air_link_token', False),
-)
+if args.action == 'install':
+    install()
