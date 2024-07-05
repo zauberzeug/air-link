@@ -1,4 +1,5 @@
 import shutil
+from typing import Optional, Tuple
 
 import docker
 from nicegui import ui
@@ -18,7 +19,7 @@ def show_disk_space() -> None:
                 label.classes('text-negative').tooltip(f'Low disk space! {free / total:.1%} left')
 
 
-def _get_docker_client() -> docker.DockerClient | None:
+def _get_docker_client() -> Optional[docker.DockerClient]:
     try:
         return docker.DockerClient(base_url='unix://var/run/docker.sock')
     except Exception:
@@ -26,7 +27,7 @@ def _get_docker_client() -> docker.DockerClient | None:
         return None
 
 
-def docker_prune_dry_run() -> tuple[int, int, int, int]:
+def docker_prune_dry_run() -> Tuple[int, int, int, int]:
     client = _get_docker_client()
     if not client:
         return 0, 0, 0, 0
@@ -42,24 +43,23 @@ def docker_prune(what: str) -> None:
     client = _get_docker_client()
     if not client:
         return
-    match what:
-        case 'images':
-            result = client.images.prune()
-            num_deleted = len(result.get('ImagesDeleted') or [])
-        case 'containers':
-            result = client.containers.prune()
-            num_deleted = len(result.get('ContainersDeleted') or [])
-        case 'volumes':
-            result = client.volumes.prune(filters={'all': True})
-            num_deleted = len(result.get('VolumesDeleted') or [])
-        case 'networks':
-            result = client.networks.prune()
-            num_deleted = len(result.get('NetworksDeleted') or [])
-        case 'caches':
-            result = client.api.prune_builds()
-            num_deleted = len(result.get('CachesDeleted') or [])
-        case _:
-            raise ValueError(f'Invalid argument: {what}')
+    if what == 'images':
+        result = client.images.prune()
+        num_deleted = len(result.get('ImagesDeleted') or [])
+    elif what == 'containers':
+        result = client.containers.prune()
+        num_deleted = len(result.get('ContainersDeleted') or [])
+    elif what == 'volumes':
+        result = client.volumes.prune(filters={'all': True})
+        num_deleted = len(result.get('VolumesDeleted') or [])
+    elif what == 'networks':
+        result = client.networks.prune()
+        num_deleted = len(result.get('NetworksDeleted') or [])
+    elif what == 'caches':
+        result = client.api.prune_builds()
+        num_deleted = len(result.get('CachesDeleted') or [])
+    else:
+        raise ValueError(f'Invalid argument: {what}')
     ui.notify(f'{num_deleted or 0} {what} deleted, {result.get("SpaceReclaimed", 0) / 2**30:.1f} GB reclaimed')
     docker_prune_preview.refresh()
 
