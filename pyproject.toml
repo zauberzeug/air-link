@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "air-link"
-version = "0.0.1-dev"
+version = "v0.1.0"
 description = "Provide SSH access, diagnostics and administration for your edge devices."
 authors = ["Zauberzeug GmbH <info@zauberzeug.com>"]
 readme = "README.md"
