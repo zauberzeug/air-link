@@ -14,6 +14,13 @@ docker = "^7.1.0"
 [tool.poetry.dev-dependencies]
 pre-commit = "^3.5.0"
 
+[tool.poetry.scripts]
+air-link = "air_link.main:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.ruff]
 indent-width = 4
 line-length = 120

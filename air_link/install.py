@@ -2,12 +2,15 @@
 import getpass
 import logging
 import subprocess
+from pathlib import Path
+
+SERVICE_FILE = Path(__file__).parent / 'air_link.service'
 
 
 def install() -> None:
     sudo_password = getpass.getpass(prompt='Enter sudo password: ')
     for cmd in [
-        'cp air_link.service /etc/systemd/system/air_link.service',
+        f'cp {SERVICE_FILE} /etc/systemd/system/air_link.service',
         'sed -i "s/USER/$USER/g" /etc/systemd/system/air_link.service',
         'systemctl daemon-reload',
         'systemctl enable air_link.service',
