@@ -4,8 +4,8 @@ After=multi-user.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/env bash -i -c ./main.py
-WorkingDirectory=/home/USER/air_link
+WorkingDirectory=/home/USER/
+ExecStart=/home/USER/.local/bin/air-link run
 User=USER
 Group=USER
 Restart=always

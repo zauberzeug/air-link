@@ -2,6 +2,14 @@
 
 Air Link is a standalone service to manage remote access to an edge device and to install user apps.
 
+[![PyPI](https://img.shields.io/pypi/v/air-link?color=dark-green)](https://pypi.org/project/air-link/)
+[![PyPI downloads](https://img.shields.io/pypi/dm/air-link?color=dark-green)](https://pypi.org/project/air-link/)
+[![GitHub license](https://img.shields.io/github/license/zauberzeug/air-link?color=orange)](https://github.com/zauberzeug/air-link/blob/main/LICENSE)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/zauberzeug/air-link)](https://github.com/zauberzeug/air-link/graphs/commit-activity)
+[![GitHub issues](https://img.shields.io/github/issues/zauberzeug/air-link?color=blue)](https://github.com/zauberzeug/air-link/issues)
+[![GitHub forks](https://img.shields.io/github/forks/zauberzeug/air-link)](https://github.com/zauberzeug/air-link/network)
+[![GitHub stars](https://img.shields.io/github/stars/zauberzeug/air-link)](https://github.com/zauberzeug/air-link/stargazers)
+
 ## Prerequisites
 
 The edge device needs to run a Linux-based OS and have Python >=3.8 installed.
@@ -34,15 +42,16 @@ The edge device needs to run a Linux-based OS and have Python >=3.8 installed.
 
 ## Setup
 
-### 1. Deploy the Air Link app to a new device
+### 1. Install the Air Link app on an edge device
 
-Run the following command on the developer machine to deploy the Air Link app to an edge device.
+Air link can be installed using pip.
+To run the app automatically after a reboot, you can install it as a system service using its `install` command.
 
 ```bash
-./deploy.py <target device>
+pip install air-link
+air-link install
 ```
 
-It will copy the Air Link app into the home directory of the edge device and start it in a system service.
 The app is accessible on port 8080 and can be reached via the IP address of the edge device.
 
 > [!NOTE]
@@ -53,8 +62,6 @@ The app is accessible on port 8080 and can be reached via the IP address of the 
 > ```
 >
 > The app will then be reachable at `localhost:8888` on the developer machine.
-
-The system service will automatically start the app after a reboot.
 
 > [!TIP]
 > To display the logs of the Air Link service, use the following command:
@@ -153,3 +160,8 @@ pre-commit run --all-files
 ```
 
 These checks will also run automatically before every commit.
+
+### Deployment
+
+To deploy a new version of Air Link, add a new tag with the format `vX.Y.Z` and push it to the repository.
+The CI pipeline will then build the new version, upload it to PyPI, and create a new draft release on GitHub.
