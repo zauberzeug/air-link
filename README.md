@@ -2,6 +2,14 @@
 
 Air Link is a standalone service to manage remote access to an edge device and to install user apps.
 
+[![PyPI](https://img.shields.io/pypi/v/air-link?color=dark-green)](https://pypi.org/project/air-link/)
+[![PyPI downloads](https://img.shields.io/pypi/dm/air-link?color=dark-green)](https://pypi.org/project/air-link/)
+[![GitHub license](https://img.shields.io/github/license/zauberzeug/air-link?color=orange)](https://github.com/zauberzeug/air-link/blob/main/LICENSE)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/zauberzeug/air-link)](https://github.com/zauberzeug/air-link/graphs/commit-activity)
+[![GitHub issues](https://img.shields.io/github/issues/zauberzeug/air-link?color=blue)](https://github.com/zauberzeug/air-link/issues)
+[![GitHub forks](https://img.shields.io/github/forks/zauberzeug/air-link)](https://github.com/zauberzeug/air-link/network)
+[![GitHub stars](https://img.shields.io/github/stars/zauberzeug/air-link)](https://github.com/zauberzeug/air-link/stargazers)
+
 ## Prerequisites
 
 The edge device needs to run a Linux-based OS and have Python >=3.8 installed.
