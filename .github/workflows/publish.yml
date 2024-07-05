@@ -1,0 +1,59 @@
+name: Publish Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - v**
+
+jobs:
+  pypi:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Set up Poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: "1.8.3"
+
+      - name: Get version
+        id: get_version
+        run: echo "VERSION=$(echo ${GITHUB_REF/refs\/tags\//})" >> $GITHUB_ENV
+
+      - name: Set version
+        run: poetry version ${{ env.VERSION }}
+
+      - name: Publish PyPI package
+        env:
+          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.LIVESYNC_PYPI_API_TOKEN }}
+        run: poetry publish --build
+
+      - name: Create GitHub release entry
+        uses: softprops/action-gh-release@v1
+        id: create_release
+        with:
+          draft: true
+          prerelease: false
+          name: ${{ env.VERSION }}
+          tag_name: ${{ env.VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Update version in pyproject.toml
+        run: python .github/workflows/update_pyproject.py $(echo ${GITHUB_REF/refs\/tags\//})
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pyproject.toml
+          git commit -m "Update pyproject.toml"
+          git push origin HEAD:main
