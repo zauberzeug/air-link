@@ -5,7 +5,7 @@ After=multi-user.target
 [Service]
 Type=simple
 WorkingDirectory=/home/USER/
-ExecStart=/home/USER/.local/bin/air-link run
+ExecStart=/bin/bash -i -c "air-link run"
 User=USER
 Group=USER
 Restart=always
