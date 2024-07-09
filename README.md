@@ -27,10 +27,11 @@ The edge device needs to run a Linux-based OS and have Python >=3.8 installed.
 > # install pyenv
 > curl https://pyenv.run | bash
 >
-> # add pyenv to shell
-> echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
-> echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
-> echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+> # add pyenv to login shell .profile, maybe also .bashrc, .zshrc, etc. depending on your shell
+> # see https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
+> echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.profile
+> echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.profile
+> echo 'eval "$(pyenv init -)"' >> ~/.profile
 >
 > # source the bashrc
 > source ~/.bashrc
