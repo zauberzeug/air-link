@@ -13,9 +13,6 @@ PACKAGES_PATH = Path('~/packages').expanduser()
 PACKAGES_PATH.mkdir(exist_ok=True)
 CURRENT_VERSION_PATH = Path(PACKAGES_PATH / 'current_version.txt')
 
-TARGET = Path('~/robot').expanduser()
-TARGET.mkdir(exist_ok=True)
-
 
 def sorted_nicely(paths: List[Path]) -> List[Path]:
     # https://stackoverflow.com/a/2669120/3419103
@@ -52,15 +49,16 @@ def remove_package(path: Path) -> None:
 
 async def install_package(path: Path) -> None:
     logging.info(f'Extracting {path}...')
-    shutil.rmtree(TARGET)
+    target = Path(app.storage.general['target_directory']).expanduser()
+    shutil.rmtree(target)
     with zipfile.ZipFile(path, 'r') as zip_ref:
         members = zip_ref.infolist()
         for member in members:
-            extracted_path = zip_ref.extract(member, TARGET)
+            extracted_path = zip_ref.extract(member, target)
             os.chmod(extracted_path, member.external_attr >> 16)
     logging.info('...done!')
 
-    Path(TARGET / '.env').write_text(app.storage.general.get('env', ''))
+    Path(target / '.env').write_text(app.storage.general.get('env', ''))
 
     logging.info('Running install script...')
     with ui.dialog(value=True).props('maximized persistent') as dialog, ui.card():
@@ -71,7 +69,7 @@ async def install_package(path: Path) -> None:
             close_button = ui.button(icon='close', on_click=dialog.close).props('flat round color=gray-500')
             close_button.visible = False
         log = ui.log().classes('h-full')
-        await run_sh(f'cd {TARGET}; ./install.sh', log)
+        await run_sh(f'cd {target}; ./install.sh', log)
         spinner.visible = False
         close_button.visible = True
         ui.notification('Installation complete', icon='done', type='positive')

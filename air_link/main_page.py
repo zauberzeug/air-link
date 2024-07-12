@@ -31,6 +31,7 @@ def create_page() -> None:
         ui.codemirror().bind_value(app.storage.general, 'env').classes('h-32 border')
 
         ui.label('Packages').classes('text-2xl')
+        ui.input('Installation directory', value='~/robot').bind_value_to(app.storage.general, 'target_directory')
         show_packages()
         upload = ui.upload(auto_upload=True, on_upload=add_package).props('accept=.zip').classes('hidden')
         ui.button('Upload package', icon='upload', on_click=lambda: upload.run_method('pickFiles')).props('outline')
