@@ -29,7 +29,9 @@ jobs:
         run: echo "VERSION=$(echo ${GITHUB_REF/refs\/tags\//})" >> $GITHUB_ENV
 
       - name: Set version
-        run: poetry version ${{ env.VERSION }}
+        run: |
+          VERSION=${{ env.VERSION }}
+          poetry version ${VERSION#v}
 
       - name: Publish PyPI package
         env:
@@ -46,9 +48,6 @@ jobs:
           tag_name: ${{ env.VERSION }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
-
-      - name: Update version in pyproject.toml
-        run: python .github/workflows/update_pyproject.py $(echo ${GITHUB_REF/refs\/tags\//})
 
       - name: Commit and push changes
         run: |
