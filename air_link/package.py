@@ -50,6 +50,7 @@ def remove_package(path: Path) -> None:
 async def install_package(path: Path) -> None:
     logging.info(f'Extracting {path}...')
     target = Path(app.storage.general['target_directory']).expanduser()
+    target.mkdir(exist_ok=True)
     shutil.rmtree(target)
     with zipfile.ZipFile(path, 'r') as zip_ref:
         members = zip_ref.infolist()
