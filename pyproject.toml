@@ -8,8 +8,9 @@ repository = "https://github.com/zauberzeug/air-link"
 
 [tool.poetry.dependencies]
 python = "^3.8.2"
-nicegui = "^1.4.28"
+nicegui = "^2.0.1"
 docker = "^7.1.0"
+docutils = "0.20.1"  # fixes the error "Package docutils (0.21.post1) not found."
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^3.5.0"
