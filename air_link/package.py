@@ -19,6 +19,18 @@ def sorted_nicely(paths: List[Path]) -> List[Path]:
     return sorted(paths, key=lambda path: [int(c) if c.isdigit() else c for c in re.split('([0-9]+)', path.stem)])
 
 
+def write_env(target_folder: Path) -> None:
+    Path(target_folder / '.env').write_text(app.storage.general.get('env', ''))
+
+
+def read_env(target_folder: Path) -> None:
+    app.storage.general['env'] = Path(target_folder / '.env').read_text()
+
+
+def get_target_folder() -> Path:
+    return Path(app.storage.general['target_directory']).expanduser()
+
+
 @ui.refreshable
 def show_packages() -> ui.row:
     paths = sorted_nicely(list(PACKAGES_PATH.glob('*.zip')))
@@ -49,7 +61,7 @@ def remove_package(path: Path) -> None:
 
 async def install_package(path: Path) -> None:
     logging.info(f'Extracting {path}...')
-    target = Path(app.storage.general['target_directory']).expanduser()
+    target = get_target_folder()
     target.mkdir(exist_ok=True)
     shutil.rmtree(target)
     with zipfile.ZipFile(path, 'r') as zip_ref:
@@ -59,7 +71,7 @@ async def install_package(path: Path) -> None:
             os.chmod(extracted_path, member.external_attr >> 16)
     logging.info('...done!')
 
-    Path(target / '.env').write_text(app.storage.general.get('env', ''))
+    write_env(target)
 
     logging.info('Running install script...')
     with ui.dialog(value=True).props('maximized persistent') as dialog, ui.card():
