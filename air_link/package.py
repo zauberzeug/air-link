@@ -24,11 +24,16 @@ def write_env(target_folder: Path) -> None:
 
 
 def read_env(target_folder: Path) -> None:
-    app.storage.general['env'] = Path(target_folder / '.env').read_text()
+    file_path = Path(target_folder / '.env')
+    if not file_path.exists():
+        file_path.touch()
+    app.storage.general['env'] = file_path.read_text()
 
 
 def get_target_folder() -> Path:
-    return Path(app.storage.general['target_directory']).expanduser()
+    target_folder = Path(app.storage.general['target_directory']).expanduser()
+    target_folder.mkdir(exist_ok=True)
+    return target_folder
 
 
 @ui.refreshable
@@ -62,7 +67,6 @@ def remove_package(path: Path) -> None:
 async def install_package(path: Path) -> None:
     logging.info(f'Extracting {path}...')
     target = get_target_folder()
-    target.mkdir(exist_ok=True)
     shutil.rmtree(target)
     with zipfile.ZipFile(path, 'r') as zip_ref:
         members = zip_ref.infolist()
