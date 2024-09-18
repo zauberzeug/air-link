@@ -1,7 +1,7 @@
 from nicegui import app, ui
 
 from .authorized_keys import AuthorizedKeysDialog
-from .package import add_package, get_target_folder, read_env, show_packages, write_env
+from .package import add_package, read_env, show_packages, write_env
 from .system import docker_prune_preview, show_disk_space
 
 
@@ -29,14 +29,15 @@ def create_page() -> None:
 
         with ui.row():
             ui.label('Environment variables').classes('text-2xl')
-            ui.button(icon='refresh', on_click=lambda: read_env(get_target_folder())) \
+            ui.button(icon='refresh', on_click=read_env) \
                 .props('flat outline').tooltip('Load environment variables')
-            ui.button(icon='save', on_click=lambda: write_env(get_target_folder())) \
+            ui.button(icon='save', on_click=write_env) \
                 .props('flat outline').tooltip('Save environment variables')
         ui.codemirror().bind_value(app.storage.general, 'env').classes('h-32 border')
 
         ui.label('Packages').classes('text-2xl')
-        ui.input('Installation directory', value='~/robot').bind_value_to(app.storage.general, 'target_directory')
+        ui.input('Installation directory', value=app.storage.general.get('target_directory', ''),
+                 placeholder='~/robot').bind_value_to(app.storage.general, 'target_directory')
         show_packages()
         upload = ui.upload(auto_upload=True, on_upload=add_package).props('accept=.zip').classes('hidden')
         ui.button('Upload package', icon='upload', on_click=lambda: upload.run_method('pickFiles')).props('outline')

@@ -19,21 +19,35 @@ def sorted_nicely(paths: List[Path]) -> List[Path]:
     return sorted(paths, key=lambda path: [int(c) if c.isdigit() else c for c in re.split('([0-9]+)', path.stem)])
 
 
-def write_env(target_folder: Path) -> None:
+def get_target_folder() -> Path | None:
+    target_folder_name = app.storage.general.get('target_directory', False)
+    if not target_folder_name:
+        return None
+    target_folder = Path(target_folder_name).expanduser()
+    return target_folder
+
+
+def write_env() -> None:
+    target_folder: Path | None = get_target_folder()
+    if target_folder is None:
+        ui.notify('Please set the installation directory first', type='negative')
+        return
+    target_folder.mkdir(exist_ok=True)
     Path(target_folder / '.env').write_text(app.storage.general.get('env', ''))
 
 
-def read_env(target_folder: Path) -> None:
+def read_env() -> None:
+    target_folder: Path | None = get_target_folder()
+    if target_folder is None:
+        ui.notify('Please set the installation directory first', type='negative')
+        return
+    if not target_folder.exists():
+        ui.notify('Installation directory not found', type='negative')
+        return
     file_path = Path(target_folder / '.env')
     if not file_path.exists():
         file_path.touch()
     app.storage.general['env'] = file_path.read_text()
-
-
-def get_target_folder() -> Path:
-    target_folder = Path(app.storage.general['target_directory']).expanduser()
-    target_folder.mkdir(exist_ok=True)
-    return target_folder
 
 
 @ui.refreshable
@@ -65,17 +79,21 @@ def remove_package(path: Path) -> None:
 
 
 async def install_package(path: Path) -> None:
+    target_folder = get_target_folder()
+    if not target_folder:
+        ui.notify('Please set the installation directory first', type='negative')
+        return
+    target_folder.mkdir(exist_ok=True)
     logging.info(f'Extracting {path}...')
-    target = get_target_folder()
-    shutil.rmtree(target)
+    shutil.rmtree(target_folder)
     with zipfile.ZipFile(path, 'r') as zip_ref:
         members = zip_ref.infolist()
         for member in members:
-            extracted_path = zip_ref.extract(member, target)
+            extracted_path = zip_ref.extract(member, target_folder)
             os.chmod(extracted_path, member.external_attr >> 16)
     logging.info('...done!')
 
-    write_env(target)
+    write_env()
 
     logging.info('Running install script...')
     with ui.dialog(value=True).props('maximized persistent') as dialog, ui.card():
@@ -86,7 +104,7 @@ async def install_package(path: Path) -> None:
             close_button = ui.button(icon='close', on_click=dialog.close).props('flat round color=gray-500')
             close_button.visible = False
         log = ui.log().classes('h-full')
-        await run_sh(f'cd {target}; ./install.sh', log)
+        await run_sh(f'cd {target_folder}; ./install.sh', log)
         spinner.visible = False
         close_button.visible = True
         ui.notification('Installation complete', icon='done', type='positive')
