@@ -3,7 +3,7 @@ import logging
 from nicegui import app, ui
 
 from .main_page import create_page
-from .package import get_target_folder, read_env
+from .package import read_env
 from .ssh import setup
 
 
@@ -15,7 +15,6 @@ def run() -> None:
     if on_air:
         app.on_startup(setup)
 
-    read_env(get_target_folder())
     create_page()
-
+    app.on_startup(read_env)
     ui.run(title='Air Link', favicon='⛑', reload=False, on_air=on_air)
