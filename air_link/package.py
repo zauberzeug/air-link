@@ -5,7 +5,7 @@ import shutil
 import subprocess
 import zipfile
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 from nicegui import app, events, run, ui
 
@@ -19,7 +19,7 @@ def sorted_nicely(paths: List[Path]) -> List[Path]:
     return sorted(paths, key=lambda path: [int(c) if c.isdigit() else c for c in re.split('([0-9]+)', path.stem)])
 
 
-def get_target_folder() -> Path | None:
+def get_target_folder() -> Optional[Path]:
     target_folder_name = app.storage.general.get('target_directory', False)
     if not target_folder_name:
         return None
@@ -28,7 +28,7 @@ def get_target_folder() -> Path | None:
 
 
 def write_env() -> None:
-    target_folder: Path | None = get_target_folder()
+    target_folder = get_target_folder()
     if target_folder is None:
         ui.notify('Please set the installation directory first', type='negative')
         return
@@ -37,7 +37,7 @@ def write_env() -> None:
 
 
 def read_env() -> None:
-    target_folder: Path | None = get_target_folder()
+    target_folder = get_target_folder()
     if target_folder is None:
         ui.notify('Please set the installation directory first', type='negative')
         return
