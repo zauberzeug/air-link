@@ -2,7 +2,7 @@ import shutil
 from typing import Optional, Tuple
 
 import docker
-from nicegui import ui
+from nicegui import app, ui
 
 
 @ui.refreshable
@@ -86,3 +86,29 @@ def docker_prune_preview() -> None:
                     with ui.button(icon='arrow_drop_down').props('flat dense'):
                         with ui.menu():
                             ui.menu_item('Delete', on_click=lambda k=key: docker_prune(k)).classes('text-negative')
+
+
+@ui.refreshable
+def network_stats() -> None:
+    with ui.card().tight().props('flat bordered'):
+        with ui.card_section().classes('w-full bg-gray-100'):
+            with ui.row().classes('w-full items-center justify-between'):
+                ui.label('Network').classes('text-lg text-bold')
+                ui.button(icon='refresh', on_click=network_stats.refresh).props('flat outline')
+        with ui.card_section(), ui.scroll_area().classes('w-32 h-[200px]') as area:
+            network = app.storage.general.get('network', [])
+            day = ''
+            for event in network:
+                timestamp, state = event
+                d, time = timestamp.split(' ', 1)
+                if d != day:
+                    day = d
+                    ui.label(f'{day}').classes('text-bold')
+                if state == 'network_down':
+                    color = 'text-negative'
+                elif state == 'network_bad':
+                    color = 'text-warning'
+                else:
+                    color = 'text-positive'
+                ui.label(time).classes(color)
+        area.scroll_to(percent=100)
