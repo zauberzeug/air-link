@@ -17,4 +17,4 @@ def run() -> None:
 
     create_page()
     app.on_startup(read_env)
-    ui.run(title='Air Link', favicon='⛑', reload=False, on_air=on_air)
+    ui.run(title='Air Link', favicon='⛑', reload=False, on_air=on_air, show=False)
