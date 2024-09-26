@@ -10,6 +10,7 @@ from .ssh import setup
 def run() -> None:
     logging.basicConfig(level=logging.INFO)
     logging.getLogger('watchfiles').setLevel(logging.WARNING)
+    logging.getLogger('nicegui.air').setLevel(logging.DEBUG)
 
     on_air = app.storage.general.get('air_link_token', False)
     if on_air:
