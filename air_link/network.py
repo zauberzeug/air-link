@@ -3,29 +3,25 @@ import time
 import aioping
 from nicegui import app, ui
 
+HISTORY_SIZE = 300
 
-async def collect_data():
+
+async def collect_data() -> None:
     try:
         latency = await aioping.ping('8.8.8.8', timeout=1)
-        latency_ms = round(latency * 1000, 2)
     except TimeoutError:
-        latency_ms = None
-    storage = app.storage.general
-    storage.setdefault('network', [])
-    if latency_ms is None:
-        state = 'network_down'
-    elif latency_ms > 100:
-        state = 'network_bad'
-    else:
-        state = 'network_good'
-    timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
-    events = storage.get('network')
-    if events and state != events[-1][1]:
-        print(timestamp, state)
-        storage['network'].append((timestamp, state))
-        if len(storage['network']) > 300:
-            storage['network'].pop(0)
+        latency = None
+    state = 'down' if latency is None else 'bad' if latency > 0.1 else 'good'
+    events = app.storage.general.setdefault('network', [])
+    if events and state == events[-1][1]:
+        return
+
+    timestamp = time.strftime(r'%Y-%m-%d %H:%M:%S')
+    print('network:', timestamp, state)
+    events.append((timestamp, state))
+    while len(events) > HISTORY_SIZE:
+        events.pop(0)
 
 
-def setup():
+def setup() -> None:
     ui.timer(1, collect_data)

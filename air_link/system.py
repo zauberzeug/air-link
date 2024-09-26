@@ -96,19 +96,13 @@ def network_stats() -> None:
                 ui.label('Network').classes('text-lg text-bold')
                 ui.button(icon='refresh', on_click=network_stats.refresh).props('flat outline')
         with ui.card_section(), ui.scroll_area().classes('w-32 h-[200px]') as area:
-            network = app.storage.general.get('network', [])
-            day = ''
-            for event in network:
-                timestamp, state = event
-                d, time = timestamp.split(' ', 1)
-                if d != day:
-                    day = d
-                    ui.label(f'{day}').classes('text-bold')
-                if state == 'network_down':
-                    color = 'text-negative'
-                elif state == 'network_bad':
-                    color = 'text-warning'
-                else:
-                    color = 'text-positive'
-                ui.label(time).classes(color)
+            events = app.storage.general.get('network', [])
+            last_date = ''
+            for timestamp, state in events:
+                date, time = timestamp.split(' ', 1)
+                if date != last_date:
+                    last_date = date
+                    ui.label(date).classes('text-bold')
+                color = 'negative' if state == 'down' else 'warning' if state == 'bad' else 'positive'
+                ui.label(time).classes(f'text-{color}')
         area.scroll_to(percent=100)
