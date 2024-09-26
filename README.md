@@ -68,7 +68,7 @@ The app is accessible on port 8080 and can be reached via the IP address of the 
 > To display the logs of the Air Link service, use the following command:
 >
 > ```bash
-> journalctl -u air_link -f
+> journalctl -u air-link -f
 > ```
 >
 > The `-f` flag will follow the logs in real-time.
