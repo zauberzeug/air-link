@@ -11,7 +11,7 @@ async def collect_data() -> None:
         latency = await aioping.ping('8.8.8.8', timeout=1)
     except TimeoutError:
         latency = None
-    state = 'down' if latency is None else 'bad' if latency > 0.1 else 'good'
+    state = 'down' if latency is None else 'bad' if latency > 0.3 else 'good'
     events = app.storage.general.setdefault('network', [])
     if events and state == events[-1][1]:
         return
