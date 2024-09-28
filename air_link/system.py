@@ -104,5 +104,5 @@ def network_stats() -> None:
                     last_date = date
                     ui.label(date).classes('text-bold')
                 color = 'negative' if state == 'down' else 'warning' if state == 'bad' else 'positive'
-                ui.label(time).classes(f'text-{color}')
+                ui.label(f'{time}: {state}').classes(f'text-{color}')
         area.scroll_to(percent=100)

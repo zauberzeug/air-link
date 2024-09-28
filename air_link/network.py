@@ -17,7 +17,7 @@ async def collect_data() -> None:
         return
 
     timestamp = time.strftime(r'%Y-%m-%d %H:%M:%S')
-    print('network:', timestamp, state)
+    print('network:', state)
     events.append((timestamp, state))
     while len(events) > HISTORY_SIZE:
         events.pop(0)
