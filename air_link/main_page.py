@@ -2,7 +2,7 @@ from nicegui import app, ui
 
 from .authorized_keys import AuthorizedKeysDialog
 from .package import add_package, read_env, show_packages, write_env
-from .system import docker_prune_preview, show_disk_space
+from .system import docker_prune_preview, network_stats, show_disk_space
 
 
 def create_page() -> None:
@@ -46,3 +46,4 @@ def create_page() -> None:
         with ui.row().classes('w-full'):
             show_disk_space()
             docker_prune_preview()
+            network_stats()

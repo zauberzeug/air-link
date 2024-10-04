@@ -11,6 +11,7 @@ python = "^3.8.2"
 nicegui = "^2.3.0"
 docker = "^7.1.0"
 docutils = "0.20.1"  # fixes the error "Package docutils (0.21.post1) not found."
+aioping = "^0.4.0"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^3.5.0"
