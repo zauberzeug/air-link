@@ -47,3 +47,7 @@ def create_page() -> None:
             show_disk_space()
             docker_prune_preview()
             network_stats()
+
+    @app.get('/status')
+    def status():
+        return {'status': 'ok'}
