@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 from nicegui import app, ui
@@ -11,7 +12,7 @@ def run() -> None:
     logging.basicConfig(level=logging.INFO)
     logging.getLogger('watchfiles').setLevel(logging.WARNING)
     logging.getLogger('nicegui.air').setLevel(logging.DEBUG)
-
+    asyncio.run(app.storage.general.initialize())
     on_air = app.storage.general.get('air_link_token', False)
     if on_air:
         app.on_startup(ssh.setup)
