@@ -33,8 +33,8 @@ The edge device needs to run a Linux-based OS and have Python >=3.8 installed.
 > echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.profile
 > echo 'eval "$(pyenv init -)"' >> ~/.profile
 >
-> # source the bashrc
-> source ~/.bashrc
+> # source the updated configuration
+> source ~/.profile
 >
 > # install Python 3.11
 > pyenv install 3.11
