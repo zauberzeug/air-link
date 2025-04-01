@@ -141,8 +141,9 @@ The last bit tells SSH with which user you want to log into the edge device
 ### Testing Locally
 
 1. Start On Air server with `./main.py`.
-2. Start Air Link locally with `./main.py` (and let it point to the local On Air server "localhost").
-3. Establish an SSH connection to your local machine via proxy jump over the On Air server: `ssh -J zauberzeug/rodja@localhost:2222 rodja@localhost`.
+2. Modify Air Link `main.py` to point to the local On Air server: `import nicegui.air` and `nicegui.air.RELAY_HOST = 'http://localhost'`.
+3. Start Air Link locally with `./main.py run`.
+4. Establish an SSH connection to your local machine via proxy jump over the On Air server: `ssh -J zauberzeug/rodja@localhost:2222 rodja@localhost`.
 
 ### Formatting
 
