@@ -1,0 +1,7 @@
+__pycache__/
+*.egg-info/
+.*.swp
+venv
+.DS_Store
+.git/
+.mypy_cache/
