@@ -12,11 +12,11 @@ def main() -> None:
     parser.add_argument('action', choices=['install', 'run', 'set-token'], help='action to perform', default='run')
     parser.add_argument('token', nargs='?',
                         help='On Air token for remote access (used with "install" or "set-token" actions)')
-    parser.add_argument('--port', type=int, help='Port where the app should be launched')
+    parser.add_argument('--port', type=int, help='Port where the app should be launched (default: 4230)')
     args = parser.parse_args()
 
     if args.action == 'run':
-        port = args.port or app.storage.general.get('air_link_port')
+        port = args.port or app.storage.general.get('air_link_port', 7456)
         run(port=port)
 
     if args.action == 'install':
