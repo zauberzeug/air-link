@@ -11,7 +11,6 @@ def install() -> None:
     """Install Air Link as a service."""
     print('Installing Air Link as a service...')
     sudo_password = getpass.getpass(prompt='Enter sudo password: ')
-    print(f'sudo_password: {sudo_password}')
     for cmd in [
         f'cp {SERVICE_FILE} /etc/systemd/system/air-link.service',
         'sed -i "s/USER/$USER/g" /etc/systemd/system/air-link.service',
