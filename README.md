@@ -45,7 +45,7 @@ The edge device needs to run a Linux-based OS and have Python >=3.8 installed.
 
 ### 1. Install the Air Link app on an edge device
 
-Air link can be installed using pip.
+Air Link should be installed using pip.
 To run the app automatically after a reboot, you can install it as a system service using its `install` command.
 
 ```bash
@@ -53,17 +53,17 @@ pip install air-link
 air-link install [<on air token>]
 ```
 
-The app is accessible on port 8080 and can be reached via the IP address of the edge device.
+After that, Air Link is accessible via the IP address of the edge device on default port 4230 (http://localhost:4230).
 If you have provided an On Air token, the app is also accessible via NiceGUI On Air (see below).
 
 > [!NOTE]
 > To make the app accessible over an SSH tunnel, you can log into the edge device with the following command:
 >
 > ```bash
-> ssh -L 8888:localhost:8080 <target device>
+> ssh -L 8888:localhost:4230 <target device>
 > ```
 >
-> The app will then be reachable at `localhost:8888` on the developer machine.
+> The app will then be reachable at `localhost:8888` on your developer machine.
 
 > [!TIP]
 > To display the logs of the Air Link service, use the following command:
@@ -83,7 +83,7 @@ To make the Air Link app accessible via NiceGUI On Air, follow these three steps
     Alternatively, you can enter the token in the top right corner of the Air Link web interface.
 3.  Restart the Air Link service using `systemctl restart air-link.service` or the button on the top right corner of the Air Link web interface.
 
-Air Link will be reachable through the URL provided by NiceGUI On Air, for example <https://europe.on-air.io/zauberzeug/rodja-air-link>.
+Air Link will be reachable through the URL provided by NiceGUI On Air, for example <https://europe.on-air.io/zauberzeug/demo-air-link>.
 We strongly suggest to set a fixed region for the device at <https://on-air.nicegui.io> to keep the URL stable.
 
 ### 3. Manage SSH keys (optional)
