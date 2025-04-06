@@ -17,7 +17,8 @@ def install() -> None:
         'systemctl daemon-reload',
         'systemctl enable air-link',
         'systemctl restart air-link',
-        'sleep 3 && systemctl status air-link || journalctl -u air-link --no-pager -n 10 && exit 1',
+        'sleep 5 # give service time to start',
+        'systemctl status air-link || { journalctl -u air-link --no-pager -n 20; false; }',
     ]:
         sudo_cmd = f'sudo -S {cmd}'
         try:
