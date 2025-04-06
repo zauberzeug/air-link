@@ -21,7 +21,6 @@ def main() -> None:
         if args.token:
             app.storage.general['air_link_token'] = args.token
         install()
-        print('Installation complete.')
         if args.token:
             print('Token is saved.')
 

@@ -1,10 +1,10 @@
 [Unit]
 Description=Air Link
-After=multi-user.target
 
 [Service]
 Type=simple
 WorkingDirectory=/home/USER/
+ExecCondition=/bin/sh -c 'command -v air-link >/dev/null || { echo "Error: air-link command not found. Please run \'pip install air-link\' as user \'USER\'." >&2; exit 1; }'
 ExecStart=/usr/bin/env bash --login -c "air-link run"
 User=USER
 Group=USER
