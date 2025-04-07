@@ -25,7 +25,6 @@ def main() -> None:
         if args.port:
             app.storage.general['air_link_port'] = args.port
         install()
-        print('Installation complete.')
         if args.token:
             print('Token is saved.')
         if args.port:
