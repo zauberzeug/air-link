@@ -7,7 +7,7 @@ from .main_page import create_page
 from .package import read_env
 
 
-def run(port=None) -> None:
+def run(port: int) -> None:
     logging.basicConfig(level=logging.INFO)
     logging.getLogger('watchfiles').setLevel(logging.WARNING)
     logging.getLogger('nicegui.air').setLevel(logging.DEBUG)
