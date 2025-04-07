@@ -16,7 +16,7 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.action == 'run':
-        port = args.port or app.storage.general.get('air_link_port', 7456)
+        port = args.port or app.storage.general.get('air_link_port', 4230)
         run(port=port)
 
     if args.action == 'install':
