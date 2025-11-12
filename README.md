@@ -50,7 +50,7 @@ To run the app automatically after a reboot, you can install it as a system serv
 
 ```bash
 pip install air-link
-air-link install [<on air token>]
+air-link install <on air token>
 ```
 
 After that, Air Link is accessible via the IP address of the edge device on default port 4230 (http://localhost:4230).
