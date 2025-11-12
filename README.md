@@ -12,6 +12,8 @@ Air Link is a standalone service to manage remote access to an edge device and t
 
 ## Prerequisites
 
+### Python Environment
+
 The edge device needs to run a Linux-based OS and have Python >=3.8 installed.
 
 > [!NOTE]
@@ -41,6 +43,17 @@ The edge device needs to run a Linux-based OS and have Python >=3.8 installed.
 > pyenv global 3.11
 > ```
 
+### Raw Socket Permissions
+
+To allow SSH connections, Air Link needs access to raw network sockets.
+You can grant the required permissions to the Python binary using the following command:
+
+```
+sudo setcap cap_net_raw+ep /home/username/.pyenv/versions/3.11.14/bin/python3.11
+```
+
+Note that you need to adjust the path to the Python binary according to your python setup.
+
 ## Setup
 
 ### 1. Install the Air Link app on an edge device
@@ -50,7 +63,7 @@ To run the app automatically after a reboot, you can install it as a system serv
 
 ```bash
 pip install air-link
-air-link install [<on air token>]
+air-link install <on air token>
 ```
 
 After that, Air Link is accessible via the IP address of the edge device on default port 4230 (http://localhost:4230).
