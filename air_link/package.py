@@ -5,7 +5,7 @@ import shutil
 import subprocess
 import zipfile
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 from nicegui import app, events, run, ui
 
@@ -14,7 +14,7 @@ PACKAGES_PATH.mkdir(exist_ok=True)
 CURRENT_VERSION_PATH = Path(PACKAGES_PATH / 'current_version.txt')
 
 
-def sorted_nicely(paths: List[Path]) -> List[Path]:
+def sorted_nicely(paths: list[Path]) -> list[Path]:
     # https://stackoverflow.com/a/2669120/3419103
     return sorted(paths, key=lambda path: [int(c) if c.isdigit() else c for c in re.split('([0-9]+)', path.stem)])
 
@@ -68,8 +68,8 @@ def show_packages() -> ui.row:
     return row
 
 
-def add_package(event: events.UploadEventArguments) -> None:
-    Path(PACKAGES_PATH / event.name).write_bytes(event.content.read())
+async def add_package(event: events.UploadEventArguments) -> None:
+    Path(PACKAGES_PATH / event.file.name).write_bytes(await event.file.read())
     show_packages.refresh()
 
 
