@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import os
 import re
@@ -5,7 +7,6 @@ import shutil
 import subprocess
 import zipfile
 from pathlib import Path
-from typing import Optional
 
 from nicegui import app, events, run, ui
 
@@ -19,7 +20,7 @@ def sorted_nicely(paths: list[Path]) -> list[Path]:
     return sorted(paths, key=lambda path: [int(c) if c.isdigit() else c for c in re.split('([0-9]+)', path.stem)])
 
 
-def get_target_folder() -> Optional[Path]:
+def get_target_folder() -> Path | None:
     target_folder_name = app.storage.general.get('target_directory', False)
     if not target_folder_name:
         return None

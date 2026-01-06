@@ -13,7 +13,7 @@ docker = "^7.1.0"
 aioping = "^0.4.0"
 
 [tool.poetry.group.dev.dependencies]
-pre-commit = "^3.5.0"
+pre-commit = "^4.3.0"
 
 [tool.poetry.scripts]
 air-link = "air_link.main:main"

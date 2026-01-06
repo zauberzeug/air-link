@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import shutil
-from typing import Optional, Tuple
 
 import docker
 from nicegui import app, ui
@@ -19,7 +20,7 @@ def show_disk_space() -> None:
                 label.classes('text-negative').tooltip(f'Low disk space! {free / total:.1%} left')
 
 
-def _get_docker_client() -> Optional[docker.DockerClient]:
+def _get_docker_client() -> docker.DockerClient | None:
     try:
         return docker.DockerClient(base_url='unix://var/run/docker.sock')
     except Exception:
@@ -27,7 +28,7 @@ def _get_docker_client() -> Optional[docker.DockerClient]:
         return None
 
 
-def docker_prune_dry_run() -> Tuple[int, int, int, int]:
+def docker_prune_dry_run() -> tuple[int, int, int, int]:
     client = _get_docker_client()
     if not client:
         return 0, 0, 0, 0

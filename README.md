@@ -14,7 +14,7 @@ Air Link is a standalone service to manage remote access to an edge device and t
 
 ### Python Environment
 
-The edge device needs to run a Linux-based OS and have Python >=3.8 installed.
+The edge device needs to run a Linux-based OS and have Python >=3.9 installed.
 
 > [!NOTE]
 > To install a recent Python version like 3.11, you can use [pyenv](https://github.com/pyenv/pyenv):
@@ -149,7 +149,7 @@ The last bit tells SSH with which user you want to log into the edge device
 
 ### Design Decisions
 
-- Assume an edge device with a Linux-based OS and Python >=3.8.
+- Assume an edge device with a Linux-based OS and Python >=3.9.
 - Run side-by-side with user apps, because deploying/breaking a user app should not affect remote access.
 - Provide SSH access to the edge device through the websocket tunnel from NiceGUI On Air.
 
