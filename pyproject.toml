@@ -11,6 +11,7 @@ python = ">=3.9.0,<4.0.0"
 nicegui = "^3.4.0"
 docker = "^7.1.0"
 aioping = "^0.4.0"
+urllib3 = "^2.6.0"  # https://github.com/zauberzeug/air-link/security/dependabot/24
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.3.0"
