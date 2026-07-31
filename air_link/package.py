@@ -115,13 +115,11 @@ async def install_package(path: Path) -> None:
 
 
 async def run_sh(command: str, log: ui.log) -> None:
-    with subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) as process:
+    with subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True) as process:
         assert process.stdout is not None
-        assert process.stderr is not None
         while True:
             output = await run.io_bound(process.stdout.readline)
             if output == '' and process.poll() is not None:
                 break
             log.push(output)
-        log.push(process.stderr.read())
         ui.run_javascript(f'getElement({log.id}).scrollTop = getElement({log.id}).scrollHeight')
