@@ -1,14 +1,15 @@
 from __future__ import annotations
 
+import asyncio
 import logging
 import os
 import re
+import shlex
 import shutil
-import subprocess
 import zipfile
 from pathlib import Path
 
-from nicegui import app, events, run, ui
+from nicegui import app, events, ui
 
 PACKAGES_PATH = Path('~/packages').expanduser()
 PACKAGES_PATH.mkdir(exist_ok=True)
@@ -104,22 +105,35 @@ async def install_package(path: Path) -> None:
             ui.space()
             close_button = ui.button(icon='close', on_click=dialog.close).props('flat round color=gray-500')
             close_button.visible = False
-        log = ui.log().classes('h-full')
-        await run_sh(f'cd {target_folder}; ./install.sh', log)
+        log = ui.log(max_lines=1000).classes('h-full')
+        returncode = await run_sh(f'cd {shlex.quote(str(target_folder))} && ./install.sh', log)
         spinner.visible = False
         close_button.visible = True
-        ui.notification('Installation complete', icon='done', type='positive')
+        if returncode == 0:
+            ui.notification('Installation complete', icon='done', type='positive')
+        else:
+            ui.notification(f'Installation failed with exit code {returncode}', icon='error', type='negative')
     logging.info('...done!')
 
-    CURRENT_VERSION_PATH.write_text(f'./{path.name}')
+    if returncode == 0:
+        CURRENT_VERSION_PATH.write_text(f'./{path.name}')
 
 
-async def run_sh(command: str, log: ui.log) -> None:
-    with subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True) as process:
-        assert process.stdout is not None
-        while True:
-            output = await run.io_bound(process.stdout.readline)
-            if output == '' and process.poll() is not None:
-                break
-            log.push(output)
-        ui.run_javascript(f'getElement({log.id}).scrollTop = getElement({log.id}).scrollHeight')
+async def run_sh(command: str, log: ui.log) -> int:
+    process = await asyncio.create_subprocess_shell(command,
+                                                    stdout=asyncio.subprocess.PIPE,
+                                                    stderr=asyncio.subprocess.STDOUT)
+    assert process.stdout is not None
+
+    async def read_output(stdout: asyncio.StreamReader) -> None:
+        async for line in stdout:
+            log.push(line.decode(errors='replace').rstrip('\n'))
+
+    reader = asyncio.create_task(read_output(process.stdout))
+    returncode = await process.wait()
+    try:
+        # a background child of the script may keep the pipe open forever, so only wait briefly for remaining output
+        await asyncio.wait_for(reader, timeout=1.0)
+    except asyncio.TimeoutError:
+        pass
+    return returncode
