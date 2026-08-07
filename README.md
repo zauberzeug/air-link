@@ -145,7 +145,7 @@ uv sync
 
 > [!NOTE]
 > Outside the systemd service Air Link has no `CAP_NET_RAW` capability.
-> It then logs a warning once and leaves the network history empty,
+> It then logs a warning once and records the network as down,
 > unless the system allows unprivileged ICMP sockets, e.g. via `sudo sysctl -w net.ipv4.ping_group_range="0 $(id -g)"` on Linux.
 
 ### Running Tests

@@ -1,24 +1,21 @@
 import asyncio
-import logging
 import time
 
 import aioping
-from nicegui import app
-from nicegui.timer import Timer
+from nicegui import app, helpers
 
 HISTORY_SIZE = 300
 lock = asyncio.Lock()
 
 
-async def collect_data(timer: Timer) -> None:
+async def collect_data() -> None:
     async with lock:
         try:
             latency = await aioping.ping('8.8.8.8', timeout=2)
         except PermissionError:
-            timer.deactivate()
-            logging.warning('Could not open an ICMP socket, so the network history stays empty. '
-                            'Re-run "air-link install" to grant the service the CAP_NET_RAW capability.')
-            return
+            latency = None  # the network is recorded as down
+            helpers.warn_once('Could not send an ICMP echo request, so the network is recorded as down. '
+                              'Re-run "air-link install" to grant the service the CAP_NET_RAW capability.')
         except OSError:
             latency = None  # e.g. a timeout or an unreachable network
         state = 'down' if latency is None else 'bad' if latency > 1.0 else 'good'
@@ -34,4 +31,4 @@ async def collect_data(timer: Timer) -> None:
 
 
 def setup() -> None:
-    timer: Timer = app.timer(1, lambda: collect_data(timer))
+    app.timer(1, collect_data)
