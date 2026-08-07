@@ -1,14 +1,15 @@
 from __future__ import annotations
 
+import asyncio
 import logging
 import os
 import re
+import shlex
 import shutil
-import subprocess
 import zipfile
 from pathlib import Path
 
-from nicegui import app, events, run, ui
+from nicegui import app, events, ui
 
 PACKAGES_PATH = Path('~/packages').expanduser()
 PACKAGES_PATH.mkdir(exist_ok=True)
@@ -92,6 +93,7 @@ async def install_package(path: Path) -> None:
         for member in members:
             extracted_path = zip_ref.extract(member, target_folder)
             os.chmod(extracted_path, member.external_attr >> 16)
+    CURRENT_VERSION_PATH.write_text(f'./{path.name}')  # these files are installed, even if the script fails
     logging.info('...done!')
 
     write_env()
@@ -104,24 +106,51 @@ async def install_package(path: Path) -> None:
             ui.space()
             close_button = ui.button(icon='close', on_click=dialog.close).props('flat round color=gray-500')
             close_button.visible = False
-        log = ui.log().classes('h-full')
-        await run_sh(f'cd {target_folder}; ./install.sh', log)
+        log = ui.log(max_lines=1000).classes('h-full')
+        returncode = await run_sh(f'cd {shlex.quote(str(target_folder))} && ./install.sh', log)
         spinner.visible = False
         close_button.visible = True
-        ui.notification('Installation complete', icon='done', type='positive')
+        if returncode == 0:
+            ui.notification('Installation complete', icon='done', type='positive')
+        else:
+            ui.notification(f'Installation failed with exit code {returncode}', icon='error', type='negative')
     logging.info('...done!')
 
-    CURRENT_VERSION_PATH.write_text(f'./{path.name}')
 
+async def run_sh(command: str, log: ui.log) -> int:
+    process = await asyncio.create_subprocess_shell(command,
+                                                    stdout=asyncio.subprocess.PIPE,
+                                                    stderr=asyncio.subprocess.STDOUT)
+    assert process.stdout is not None
+    bytes_read = 0
 
-async def run_sh(command: str, log: ui.log) -> None:
-    with subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) as process:
-        assert process.stdout is not None
-        assert process.stderr is not None
-        while True:
-            output = await run.io_bound(process.stdout.readline)
-            if output == '' and process.poll() is not None:
-                break
-            log.push(output)
-        log.push(process.stderr.read())
-        ui.run_javascript(f'getElement({log.id}).scrollTop = getElement({log.id}).scrollHeight')
+    def push(lines: list[bytes]) -> None:
+        try:
+            for line in lines:
+                log.push(line.decode(errors='replace') or '\n')  # push('') would not render a blank line
+        except Exception:  # keep draining even without a log, or the script blocks on a full pipe forever
+            logging.exception('Could not write to the installation log')
+
+    async def read_output(stdout: asyncio.StreamReader) -> None:
+        nonlocal bytes_read
+        buffer = b''
+        while chunk := await stdout.read(65536):  # readline() would raise ValueError past its 64 KiB limit
+            bytes_read += len(chunk)
+            *lines, buffer = (buffer + chunk).split(b'\n')
+            push(lines)
+        if buffer:
+            push([buffer])
+
+    reader = asyncio.create_task(read_output(process.stdout))
+    while process.returncode is None:
+        # process.wait() would only return once every pipe is closed, which a background child can prevent forever
+        await asyncio.sleep(0.1)
+    while not reader.done():
+        # a background child may keep the pipe open forever, so only wait while output is still arriving
+        pending_bytes = bytes_read
+        await asyncio.wait([reader], timeout=1.0)
+        if bytes_read == pending_bytes:
+            reader.cancel()
+            break
+    process._transport.close()  # pylint: disable=protected-access # there is no public API to release the pipe
+    return process.returncode
