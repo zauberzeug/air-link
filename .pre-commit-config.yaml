@@ -1,17 +1,46 @@
 default_language_version:
-  python: python3.9
+  python: python3.10
 default_install_hook_types: [pre-commit, pre-push]
 default_stages: [pre-commit]
 
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.10
+    rev: v0.16.1
     hooks:
-      - id: ruff
+      - id: ruff-check
         args: [--fix]
+  - repo: https://github.com/hhatto/autopep8
+    rev: v2.3.2
+    hooks:
+      - id: autopep8
+        args: [--max-line-length=120, --in-place]
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: double-quote-string-fixer
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.3
+    hooks:
+      - id: codespell
+        additional_dependencies:
+          - tomli; python_version<'3.11'
+  - repo: https://github.com/executablebooks/mdformat
+    rev: 1.0.0
+    hooks:
+      - id: mdformat
+        args: ["--wrap", "keep", "--number"]
+        additional_dependencies:
+          - mdformat-frontmatter
+          - mdformat-gfm
+          - mdformat-simple-breaks
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: uv run mypy air_link
+        language: system
+        types: [python]
+        pass_filenames: false
+        stages: [pre-push]
