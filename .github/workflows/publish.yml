@@ -10,42 +10,40 @@ jobs:
   pypi:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write # create the release entry and push the version bump back to main
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: astral-sh/setup-uv@v9
         with:
-          python-version: "3.x"
-
-      - name: Set up Poetry
-        uses: abatilo/actions-poetry@v2
-        with:
-          poetry-version: "1.8.3"
-
-      - name: Get version
-        id: get_version
-        run: echo "VERSION=$(echo ${GITHUB_REF/refs\/tags\//})" >> $GITHUB_ENV
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
 
       - name: Set version
+        run: uv version ${GITHUB_REF_NAME#v}
+
+      - name: Build
+        run: uv build
+
+      - name: Check wheel contents
         run: |
-          VERSION=${{ env.VERSION }}
-          poetry version ${VERSION#v}
+          for file in air_link/air-link.service air_link/.syncignore; do
+            unzip -l dist/*.whl | grep -q "$file" || { echo "The wheel is missing $file"; exit 1; }
+          done
 
       - name: Publish PyPI package
-        env:
-          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.LIVESYNC_PYPI_API_TOKEN }}
-        run: poetry publish --build
+        run: uv publish --token ${{ secrets.LIVESYNC_PYPI_API_TOKEN }}
 
       - name: Create GitHub release entry
-        uses: softprops/action-gh-release@v1
-        id: create_release
+        uses: softprops/action-gh-release@v3
         with:
           draft: true
           prerelease: false
-          name: ${{ env.VERSION }}
-          tag_name: ${{ env.VERSION }}
+          name: ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
@@ -53,6 +51,6 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add pyproject.toml
-          git commit -m "Update pyproject.toml"
+          git add pyproject.toml uv.lock
+          git commit -m "Update version to ${GITHUB_REF_NAME#v}"
           git push origin HEAD:main
