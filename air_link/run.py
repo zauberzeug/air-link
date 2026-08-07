@@ -2,7 +2,7 @@ import logging
 
 from nicegui import app, ui
 
-from . import network, ssh
+from . import network, relay_check, ssh
 from .main_page import create_page
 from .package import read_env
 
@@ -15,6 +15,7 @@ def run(port: int) -> None:
     on_air = app.storage.general.get('air_link_token', False)
     if on_air:
         app.on_startup(ssh.setup)
+        app.on_startup(relay_check.setup)
 
     app.on_startup(network.setup)
 

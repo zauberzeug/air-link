@@ -2,7 +2,7 @@ import asyncio
 import time
 
 import aioping
-from nicegui import app, ui
+from nicegui import app
 
 HISTORY_SIZE = 300
 lock = asyncio.Lock()
@@ -27,4 +27,4 @@ async def collect_data() -> None:
 
 
 def setup() -> None:
-    ui.timer(1, collect_data)
+    app.timer(1, collect_data)
