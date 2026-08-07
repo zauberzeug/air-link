@@ -10,6 +10,7 @@ dependencies = [
     "nicegui>=3.15.0,<4",
     "docker>=7.2.0,<8",
     "aioping>=0.4.0,<0.5",
+    "typing-extensions>=4.0.0,<5",
 ]
 
 [project.scripts]

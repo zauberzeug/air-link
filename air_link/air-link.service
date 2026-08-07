@@ -8,6 +8,8 @@ ExecCondition=/usr/bin/env bash --login -c 'command -v air-link >/dev/null || { 
 ExecStart=/usr/bin/env bash --login -c "air-link run"
 User=USER
 Group=USER
+# allow raw ICMP sockets for the network history without running as root
+AmbientCapabilities=CAP_NET_RAW
 Restart=always
 
 [Install]

@@ -34,8 +34,12 @@ uv tool install --python 3.13 air-link
 air-link install <on air token>
 ```
 
+The service unit grants Air Link the `CAP_NET_RAW` capability, which it needs to ping a public host once per second to keep a history of the network state.
+The capability applies to the service process only, so it survives Python upgrades and does not affect other apps on the device.
+
 > [!NOTE]
 > To update Air Link later on, run `uv tool upgrade air-link`.
+> Re-run `air-link install` afterwards if the service unit shipped with the new version has changed.
 
 After that, Air Link is accessible via the IP address of the edge device on default port 4230 (http://localhost:4230).
 If you have provided an On Air token, the app is also accessible via NiceGUI On Air (see below).
@@ -58,21 +62,7 @@ If you have provided an On Air token, the app is also accessible via NiceGUI On 
 >
 > The `-f` flag will follow the logs in real-time.
 
-### 2. Grant raw socket permissions
-
-Air Link pings a public host once per second to keep a history of the network state, which needs access to raw ICMP sockets.
-Grant the required capability to the Python binary of the tool environment:
-
-```bash
-sudo setcap cap_net_raw+ep "$(readlink -f "$(uv tool dir)/air-link/bin/python")"
-```
-
-The `readlink` call is needed because `bin/python` is only a symlink, while `setcap` has to be applied to the real binary.
-Note that you need to repeat this step whenever the tool environment switches to another Python version.
-
-Without the capability, SSH access and everything else keep working — only the network history stays empty.
-
-### 3. Access via NiceGUI On Air
+### 2. Access via NiceGUI On Air
 
 To make the Air Link app accessible via NiceGUI On Air, follow these three steps:
 
@@ -84,7 +74,7 @@ To make the Air Link app accessible via NiceGUI On Air, follow these three steps
 Air Link will be reachable through the URL provided by NiceGUI On Air, for example <https://europe.on-air.io/zauberzeug/demo-air-link>.
 We strongly suggest to set a fixed region for the device at <https://on-air.nicegui.io> to keep the URL stable.
 
-### 4. Manage SSH keys (optional)
+### 3. Manage SSH keys (optional)
 
 To allow SSH access without a password, you can add SSH keys to the edge device using the Air Link web interface.
 Use the key icon in the top right corner to open the SSH key management.
@@ -152,6 +142,11 @@ uv sync
 2. Modify Air Link `main.py` to point to the local On Air server: `import nicegui.air` and `nicegui.air.RELAY_HOST = 'http://localhost'`.
 3. Start Air Link locally with `uv run ./main.py run`.
 4. Establish an SSH connection to your local machine via proxy jump over the On Air server: `ssh -J zauberzeug/rodja@localhost:2222 rodja@localhost`.
+
+> [!NOTE]
+> Outside the systemd service Air Link has no `CAP_NET_RAW` capability.
+> It then logs a warning once and leaves the network history empty,
+> unless the system allows unprivileged ICMP sockets, e.g. via `sudo sysctl -w net.ipv4.ping_group_range="0 $(id -g)"` on Linux.
 
 ### Running Tests
 

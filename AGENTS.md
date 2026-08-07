@@ -16,13 +16,21 @@ Keep two things in mind when changing it:
 We use [uv](https://docs.astral.sh/uv/):
 
 ```bash
-uv sync                       # create the environment
-uv run pytest                 # run the tests
-uv run mypy air_link          # check the types
-pre-commit run --all-files    # check the formatting
+uv sync                              # create the environment
+uv run pytest                        # run the tests
+uv run mypy air_link                 # check the types
+uv run pre-commit run --all-files    # check the formatting
 ```
 
 See the "Testing Locally" section in [README.md](README.md) for running Air Link against a local On Air server.
+
+## Writing
+
+Markdown files in this repository use semantic line breaks:
+every sentence starts on a new line, and long sentences are broken at natural boundaries like the end of a subordinate clause.
+This keeps diffs small and reviewable, so never reflow a paragraph you did not change.
+Do not wrap at a fixed column, and do not join sentences into one long line —
+the `mdformat` hook runs with `--wrap keep` and preserves whatever breaks you write.
 
 ## Pair Programming
 

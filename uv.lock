@@ -209,6 +209,7 @@ dependencies = [
     { name = "aioping" },
     { name = "docker" },
     { name = "nicegui" },
+    { name = "typing-extensions" },
 ]
 
 [package.dev-dependencies]
@@ -224,6 +225,7 @@ requires-dist = [
     { name = "aioping", specifier = ">=0.4.0,<0.5" },
     { name = "docker", specifier = ">=7.2.0,<8" },
     { name = "nicegui", specifier = ">=3.15.0,<4" },
+    { name = "typing-extensions", specifier = ">=4.0.0,<5" },
 ]
 
 [package.metadata.requires-dev]

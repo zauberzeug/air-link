@@ -35,7 +35,9 @@ jobs:
           done
 
       - name: Publish PyPI package
-        run: uv publish --token ${{ secrets.LIVESYNC_PYPI_API_TOKEN }}
+        run: uv publish
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.LIVESYNC_PYPI_API_TOKEN }}
 
       - name: Create GitHub release entry
         uses: softprops/action-gh-release@v3
