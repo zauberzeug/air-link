@@ -1,0 +1,52 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  code-check:
+    name: ${{ matrix.target.name }}
+    strategy:
+      matrix:
+        target:
+          - name: pre-commit
+            command: pre-commit run --all-files
+          - name: mypy
+            command: mypy air_link
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v9.0.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+      - name: Install Python
+        run: uv python install 3.10
+      - name: Install dependencies
+        run: uv sync --locked --python 3.10
+      - name: ${{ matrix.target.name }}
+        run: uv run --python 3.10 ${{ matrix.target.command }}
+
+  test:
+    name: pytest on Python ${{ matrix.python-version }}
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.14"]
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v9.0.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+      - name: Install Python
+        run: uv python install ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: uv sync --locked --python ${{ matrix.python-version }}
+      - name: Run tests
+        run: uv run --python ${{ matrix.python-version }} pytest
