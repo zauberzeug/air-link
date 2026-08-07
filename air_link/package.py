@@ -152,5 +152,6 @@ async def run_sh(command: str, log: ui.log) -> int:
         if bytes_read == pending_bytes:
             reader.cancel()
             break
-    process._transport.close()  # pylint: disable=protected-access # there is no public API to release the pipe
+    # there is no public API to release the pipe
+    process._transport.close()  # type: ignore[attr-defined] # pylint: disable=protected-access
     return process.returncode
