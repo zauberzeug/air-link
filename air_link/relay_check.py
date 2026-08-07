@@ -40,6 +40,7 @@ def setup() -> None:
             return
         result = await relay_serves_this_device()
         if result is None:
+            consecutive_failures = 0
             return  # the relay is unreachable (e.g. no internet), so reconnecting would not help
         consecutive_failures = 0 if result else consecutive_failures + 1
         if consecutive_failures < FAILURES_BEFORE_RECONNECT:
