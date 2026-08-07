@@ -126,14 +126,21 @@ async def run_sh(command: str, log: ui.log) -> int:
     assert process.stdout is not None
 
     async def read_output(stdout: asyncio.StreamReader) -> None:
-        async for line in stdout:
-            log.push(line.decode(errors='replace').rstrip('\n'))
+        buffer = b''
+        while chunk := await stdout.read(65536):  # NOTE: readline() would raise ValueError past its 64 KiB limit
+            *lines, buffer = (buffer + chunk).split(b'\n')
+            for line in lines:
+                log.push(line.decode(errors='replace'))
+        if buffer:
+            log.push(buffer.decode(errors='replace'))
 
     reader = asyncio.create_task(read_output(process.stdout))
-    returncode = await process.wait()
+    while process.returncode is None:
+        # process.wait() would only return once every pipe is closed, which a background child can prevent forever
+        await asyncio.sleep(0.1)
     try:
         # a background child of the script may keep the pipe open forever, so only wait briefly for remaining output
         await asyncio.wait_for(reader, timeout=1.0)
     except asyncio.TimeoutError:
         pass
-    return returncode
+    return process.returncode
