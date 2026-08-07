@@ -4,7 +4,7 @@ import asyncio
 import logging
 
 import httpx
-from nicegui import core, ui
+from nicegui import app, core
 
 CHECK_INTERVAL = 60.0  # seconds between checks
 FAILURES_BEFORE_RECONNECT = 2
@@ -53,4 +53,4 @@ def setup() -> None:
         except Exception:
             logging.exception('disconnecting from the On Air relay failed')
 
-    ui.timer(CHECK_INTERVAL, check)
+    app.timer(CHECK_INTERVAL, check)
