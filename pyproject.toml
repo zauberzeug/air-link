@@ -1,6 +1,6 @@
 [project]
 name = "air-link"
-version = "0.5.0"
+version = "0.6.0"
 description = "Provide SSH access, diagnostics and administration for your edge devices."
 authors = [{ name = "Zauberzeug GmbH", email = "info@zauberzeug.com" }]
 requires-python = ">=3.10,<4"
