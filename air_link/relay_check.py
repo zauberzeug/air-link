@@ -2,12 +2,21 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from typing import Literal
 
 import httpx
 from nicegui import app, core
 
 CHECK_INTERVAL = 60.0  # seconds between checks
 FAILURES_BEFORE_RECONNECT = 2
+
+Probe = Literal['served', 'not_served', 'unreachable']
+"""The outcome of probing the relay:
+
+``served`` -- the relay forwarded the request to this process;
+``not_served`` -- the relay answered, but not on behalf of this device;
+``unreachable`` -- the relay was never reached, e.g. because there is no internet.
+"""
 
 
 def setup() -> None:
@@ -21,30 +30,33 @@ def setup() -> None:
     """
     consecutive_failures = 0
 
-    async def relay_serves_this_device() -> bool | None:
-        """Fetch the public status endpoint; ``None`` means the relay could not be reached at all."""
+    async def probe_relay() -> Probe:
+        """Ask the relay for this device's status endpoint."""
         assert core.air is not None
         if core.air.remote_url is None:
-            return False  # the client connected, but the relay never announced the device URL
+            return 'not_served'  # the client connected, but the relay never announced the device URL
         try:
             async with httpx.AsyncClient() as client:
                 # NOTE: probing "/status" rather than "/" keeps the relay from rendering the whole
                 # main page in-process, which would block the event loop on Docker and disk calls
                 response = await client.get(core.air.remote_url.rstrip('/') + '/status', timeout=15)
+        except (httpx.ConnectError, httpx.ConnectTimeout, httpx.ProxyError):
+            return 'unreachable'  # we never talked to the relay, so reconnecting would not help
         except httpx.HTTPError:
-            return None
-        return response.status_code != 404
+            # the relay accepted the connection but did not answer for us (e.g. a read timeout
+            # while the forwarding socket is dead), which is exactly the situation to reconnect in
+            return 'not_served'
+        return 'served' if response.status_code == 200 else 'not_served'
 
     async def check() -> None:
         nonlocal consecutive_failures
         if core.air is None or not core.air.relay.connected:
             consecutive_failures = 0  # NiceGUI reconnects on its own while the client knows it is disconnected
             return
-        result = await relay_serves_this_device()
-        if result is None:
-            consecutive_failures = 0
-            return  # the relay is unreachable (e.g. no internet), so reconnecting would not help
-        consecutive_failures = 0 if result else consecutive_failures + 1
+        probe = await probe_relay()
+        if probe == 'unreachable':
+            return  # this check reached no verdict, so it must not reset the counter either
+        consecutive_failures = 0 if probe == 'served' else consecutive_failures + 1
         if consecutive_failures < FAILURES_BEFORE_RECONNECT:
             return
         consecutive_failures = 0
