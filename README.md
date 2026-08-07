@@ -14,7 +14,7 @@ Air Link is a standalone service to manage remote access to an edge device and t
 
 ### Python Environment
 
-The edge device needs to run a Linux-based OS and have Python >=3.10 available.
+The edge device needs to run a Linux-based OS.
 We recommend [uv](https://docs.astral.sh/uv/), which brings its own Python and keeps Air Link isolated from the rest of the system:
 
 ```bash
@@ -30,7 +30,7 @@ Install Air Link as a uv tool.
 To run the app automatically after a reboot, you can install it as a system service using its `install` command.
 
 ```bash
-uv tool install --python 3.13 air-link
+uv tool install --python 3.14 air-link
 air-link install <on air token>
 ```
 

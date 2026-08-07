@@ -29,10 +29,7 @@ jobs:
         run: uv build
 
       - name: Check wheel contents
-        run: |
-          for file in air_link/air-link.service air_link/.syncignore; do
-            unzip -l dist/*.whl | grep -q "$file" || { echo "The wheel is missing $file"; exit 1; }
-          done
+        run: ./.github/scripts/check_wheel_contents.sh
 
       - name: Publish PyPI package
         run: uv publish
