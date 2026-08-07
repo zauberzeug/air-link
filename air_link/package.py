@@ -93,6 +93,7 @@ async def install_package(path: Path) -> None:
         for member in members:
             extracted_path = zip_ref.extract(member, target_folder)
             os.chmod(extracted_path, member.external_attr >> 16)
+    CURRENT_VERSION_PATH.write_text(f'./{path.name}')  # these files are installed, even if the script fails
     logging.info('...done!')
 
     write_env()
@@ -115,32 +116,41 @@ async def install_package(path: Path) -> None:
             ui.notification(f'Installation failed with exit code {returncode}', icon='error', type='negative')
     logging.info('...done!')
 
-    if returncode == 0:
-        CURRENT_VERSION_PATH.write_text(f'./{path.name}')
-
 
 async def run_sh(command: str, log: ui.log) -> int:
     process = await asyncio.create_subprocess_shell(command,
                                                     stdout=asyncio.subprocess.PIPE,
                                                     stderr=asyncio.subprocess.STDOUT)
     assert process.stdout is not None
+    bytes_read = 0
+
+    def push(lines: list[bytes]) -> None:
+        try:
+            for line in lines:
+                log.push(line.decode(errors='replace') or '\n')  # push('') would not render a blank line
+        except Exception:  # keep draining even without a log, or the script blocks on a full pipe forever
+            logging.exception('Could not write to the installation log')
 
     async def read_output(stdout: asyncio.StreamReader) -> None:
+        nonlocal bytes_read
         buffer = b''
-        while chunk := await stdout.read(65536):  # NOTE: readline() would raise ValueError past its 64 KiB limit
+        while chunk := await stdout.read(65536):  # readline() would raise ValueError past its 64 KiB limit
+            bytes_read += len(chunk)
             *lines, buffer = (buffer + chunk).split(b'\n')
-            for line in lines:
-                log.push(line.decode(errors='replace'))
+            push(lines)
         if buffer:
-            log.push(buffer.decode(errors='replace'))
+            push([buffer])
 
     reader = asyncio.create_task(read_output(process.stdout))
     while process.returncode is None:
         # process.wait() would only return once every pipe is closed, which a background child can prevent forever
         await asyncio.sleep(0.1)
-    try:
-        # a background child of the script may keep the pipe open forever, so only wait briefly for remaining output
-        await asyncio.wait_for(reader, timeout=1.0)
-    except asyncio.TimeoutError:
-        pass
+    while not reader.done():
+        # a background child may keep the pipe open forever, so only wait while output is still arriving
+        pending_bytes = bytes_read
+        await asyncio.wait([reader], timeout=1.0)
+        if bytes_read == pending_bytes:
+            reader.cancel()
+            break
+    process._transport.close()  # pylint: disable=protected-access # there is no public API to release the pipe
     return process.returncode
