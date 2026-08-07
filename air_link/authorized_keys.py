@@ -1,11 +1,12 @@
 from pathlib import Path
 
 from nicegui import ui
+from typing_extensions import Self
 
 
 class AuthorizedKeysDialog(ui.dialog):
 
-    def open(self) -> None:
+    def open(self) -> Self:
         super().open()
         path = Path('~/.ssh/authorized_keys').expanduser()
         columns = [
@@ -40,3 +41,4 @@ class AuthorizedKeysDialog(ui.dialog):
                 key = ui.input('New key').props('outlined').on('keydown.enter', add_key).classes('flex-grow')
                 ui.button('Add', on_click=add_key).bind_enabled_from(key, 'value')
                 ui.button('Remove', on_click=remove_key).bind_enabled_from(table, 'selected', bool)
+        return self

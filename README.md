@@ -14,57 +14,32 @@ Air Link is a standalone service to manage remote access to an edge device and t
 
 ### Python Environment
 
-The edge device needs to run a Linux-based OS and have Python >=3.9 installed.
+The edge device needs to run a Linux-based OS.
+We recommend [uv](https://docs.astral.sh/uv/), which brings its own Python and keeps Air Link isolated from the rest of the system:
 
-> [!NOTE]
-> To install a recent Python version like 3.11, you can use [pyenv](https://github.com/pyenv/pyenv):
->
-> ```bash
-> # install dependencies
-> sudo apt update
-> sudo apt install build-essential libssl-dev zlib1g-dev \
-> libbz2-dev libreadline-dev libsqlite3-dev curl \
-> libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
->
-> # install pyenv
-> curl https://pyenv.run | bash
->
-> # add pyenv to login shell .profile, maybe also .bashrc, .zshrc, etc. depending on your shell
-> # see https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
-> echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.profile
-> echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.profile
-> echo 'eval "$(pyenv init -)"' >> ~/.profile
->
-> # source the updated configuration
-> source ~/.profile
->
-> # install Python 3.11
-> pyenv install 3.11
-> pyenv global 3.11
-> ```
-
-### Raw Socket Permissions
-
-To allow SSH connections, Air Link needs access to raw network sockets.
-You can grant the required permissions to the Python binary using the following command:
-
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+source ~/.profile # or open a new login shell
 ```
-sudo setcap cap_net_raw+ep /home/username/.pyenv/versions/3.11.14/bin/python3.11
-```
-
-Note that you need to adjust the path to the Python binary according to your python setup.
 
 ## Setup
 
 ### 1. Install the Air Link app on an edge device
 
-Air Link should be installed using pip.
+Install Air Link as a uv tool.
 To run the app automatically after a reboot, you can install it as a system service using its `install` command.
 
 ```bash
-pip install air-link
+uv tool install --python 3.14 air-link
 air-link install <on air token>
 ```
+
+The service unit grants Air Link the `CAP_NET_RAW` capability, which it needs to ping a public host once per second to keep a history of the network state.
+The capability applies to the service process only, so it survives Python upgrades and does not affect other apps on the device.
+
+> [!NOTE]
+> To update Air Link later on, run `uv tool upgrade air-link`.
+> Re-run `air-link install` afterwards if the service unit shipped with the new version has changed.
 
 After that, Air Link is accessible via the IP address of the edge device on default port 4230 (http://localhost:4230).
 If you have provided an On Air token, the app is also accessible via NiceGUI On Air (see below).
@@ -91,10 +66,10 @@ If you have provided an On Air token, the app is also accessible via NiceGUI On 
 
 To make the Air Link app accessible via NiceGUI On Air, follow these three steps:
 
-1.  Register a new device with a fixed region at <https://on-air.nicegui.io>.
-2.  Run `air-link set-token <on air token>` to save the token to NiceGUI's general storage.
-    Alternatively, you can enter the token in the top right corner of the Air Link web interface.
-3.  Restart the Air Link service using `systemctl restart air-link.service` or the button on the top right corner of the Air Link web interface.
+1. Register a new device with a fixed region at <https://on-air.nicegui.io>.
+2. Run `air-link set-token <on air token>` to save the token to NiceGUI's general storage.
+   Alternatively, you can enter the token in the top right corner of the Air Link web interface.
+3. Restart the Air Link service using `systemctl restart air-link.service` or the button on the top right corner of the Air Link web interface.
 
 Air Link will be reachable through the URL provided by NiceGUI On Air, for example <https://europe.on-air.io/zauberzeug/demo-air-link>.
 We strongly suggest to set a fixed region for the device at <https://on-air.nicegui.io> to keep the URL stable.
@@ -149,31 +124,52 @@ The last bit tells SSH with which user you want to log into the edge device
 
 ### Design Decisions
 
-- Assume an edge device with a Linux-based OS and Python >=3.9.
+- Assume an edge device with a Linux-based OS and Python >=3.10.
 - Run side-by-side with user apps, because deploying/breaking a user app should not affect remote access.
 - Provide SSH access to the edge device through the websocket tunnel from NiceGUI On Air.
+
+### Setting Up the Environment
+
+We use [uv](https://docs.astral.sh/uv/) to manage the development environment:
+
+```bash
+uv sync
+```
 
 ### Testing Locally
 
 1. Start On Air server with `./main.py`.
 2. Modify Air Link `main.py` to point to the local On Air server: `import nicegui.air` and `nicegui.air.RELAY_HOST = 'http://localhost'`.
-3. Start Air Link locally with `./main.py run`.
+3. Start Air Link locally with `uv run ./main.py run`.
 4. Establish an SSH connection to your local machine via proxy jump over the On Air server: `ssh -J zauberzeug/rodja@localhost:2222 rodja@localhost`.
+
+> [!NOTE]
+> Outside the systemd service Air Link has no `CAP_NET_RAW` capability.
+> It then logs a warning once and records the network as down,
+> unless the system allows unprivileged ICMP sockets, e.g. via `sudo sysctl -w net.ipv4.ping_group_range="0 $(id -g)"` on Linux.
+
+### Running Tests
+
+```bash
+uv run pytest
+uv run mypy air_link
+```
+
+Both also run in CI for every pull request.
 
 ### Formatting
 
 We use [pre-commit](https://github.com/pre-commit/pre-commit) to make sure the coding style is enforced.
-You first need to install pre-commit and the corresponding git commit hooks by running the following commands:
+You first need to install the corresponding git hooks by running the following command:
 
 ```bash
-python3 -m pip install pre-commit
-pre-commit install
+uv run pre-commit install
 ```
 
 After that you can make sure your code satisfies the coding style by running the following command:
 
 ```bash
-pre-commit run --all-files
+uv run pre-commit run --all-files
 ```
 
 These checks will also run automatically before every commit.
