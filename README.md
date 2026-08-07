@@ -60,8 +60,8 @@ If you have provided an On Air token, the app is also accessible via NiceGUI On 
 
 ### 2. Grant raw socket permissions
 
-To allow SSH connections, Air Link needs access to raw network sockets.
-Grant the required permissions to the Python binary of the tool environment:
+Air Link pings a public host once per second to keep a history of the network state, which needs access to raw ICMP sockets.
+Grant the required capability to the Python binary of the tool environment:
 
 ```bash
 sudo setcap cap_net_raw+ep "$(readlink -f "$(uv tool dir)/air-link/bin/python")"
@@ -69,6 +69,8 @@ sudo setcap cap_net_raw+ep "$(readlink -f "$(uv tool dir)/air-link/bin/python")"
 
 The `readlink` call is needed because `bin/python` is only a symlink, while `setcap` has to be applied to the real binary.
 Note that you need to repeat this step whenever the tool environment switches to another Python version.
+
+Without the capability, SSH access and everything else keep working — only the network history stays empty.
 
 ### 3. Access via NiceGUI On Air
 
