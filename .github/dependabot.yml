@@ -1,9 +1,12 @@
 version: 2
 updates:
+  # version updates are disabled (open-pull-requests-limit: 0);
+  # these entries only configure PRs for security alerts
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 0
     labels:
       - "dependencies"
 
@@ -11,5 +14,6 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 0
     labels:
       - "dependencies"
