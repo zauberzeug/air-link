@@ -12,6 +12,7 @@ dependencies = [
     "aioping>=0.4.0,<0.5",
     "typing-extensions>=4.0.0,<5",
     "urllib3>=2.6.3", # https://github.com/zauberzeug/air-link/security/dependabot/37
+    "aiohttp>=3.14.4", # https://github.com/zauberzeug/air-link/security/dependabot/105
 ]
 
 [project.scripts]
