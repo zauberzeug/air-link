@@ -24,17 +24,15 @@ Repository = "https://github.com/zauberzeug/air-link"
 [dependency-groups]
 dev = [
     "mypy>=2.3.0,<3",
-    "pre-commit>=4.6.1",
+    # on Python 3.10 its virtualenv and filelock dependencies cannot both be free of known vulnerabilities
+    "pre-commit>=4.6.1; python_full_version >= '3.11'",
     "pytest>=9.1.1,<10",
     "pytest-asyncio>=1.4.0,<2",
 ]
 
 [tool.uv]
 constraint-dependencies = [
-    # https://github.com/zauberzeug/air-link/security/dependabot/110 (also 111 and 112)
-    # the fix needs Python 3.11, so Python 3.10 stays below the affected range
-    "filelock>=4.2.1; python_full_version >= '3.11'",
-    "filelock<3.20.4; python_full_version < '3.11'",
+    "filelock>=4.2.1", # https://github.com/zauberzeug/air-link/security/dependabot/110 (also 111 and 112)
 ]
 
 [build-system]
